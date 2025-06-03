@@ -8,3 +8,29 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+/*
+ * Custom Last War: Survival Game inspired dark color palette (gray/steel focus)
+ * Use these variables in your Tailwind classes: e.g. bg-[var(--lw-bg)]
+ */
+:root {
+  /* Backgrounds */
+  --lw-bg: #181a1b;           /* deep gunmetal/charcoal */
+  --lw-surface: #232526;      /* slightly lighter surface */
+
+  /* Text */
+  --lw-text: #e0e3e1;         /* light gray for text */
+  --lw-muted: #8a8f8c;        /* muted gray for secondary text */
+
+  /* Accents */
+  --lw-accent: #495057;       /* steel gray for buttons/accents */
+  --lw-accent-2: #bfa14a;     /* muted gold/yellow, for highlights */
+  --lw-accent-3: #343a40;     /* dark slate gray for borders */
+  --lw-accent-4: #23272b;     /* very dark gray for button backgrounds */
+}
+
+/* Example usage:
+   <div class="bg-[var(--lw-bg)] text-[var(--lw-text)]">
+     ...
+   </div>
+*/
