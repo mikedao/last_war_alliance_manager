@@ -22,8 +22,12 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+  <body class="bg-[var(--lw-bg)] text-[var(--lw-text)]">
+    <nav class="w-full fixed top-0 left-0 flex items-center justify-end gap-4 py-4 px-8 shadow z-50 bg-[var(--lw-surface)] text-[var(--lw-text)] border-b border-[var(--lw-accent-3)]">
+      <button class="rounded px-4 py-2 font-semibold border border-[var(--lw-accent-3)] bg-[var(--lw-accent-4)] text-[var(--lw-text)] hover:bg-[var(--lw-accent)] transition">Sign Up</button>
+      <button class="rounded px-4 py-2 font-semibold border border-[var(--lw-accent-3)] bg-transparent text-[var(--lw-text)] hover:bg-[var(--lw-accent)] transition">Login</button>
+    </nav>
+    <main class="container mx-auto mt-28 px-5 flex flex-col items-center justify-center min-h-[60vh] bg-[var(--lw-bg)] text-[var(--lw-text)]">
       <%= yield %>
     </main>
   </body>
