@@ -24,13 +24,7 @@
 
   /* Accents */
   --lw-accent: #495057;       /* steel gray for buttons/accents */
-  --lw-accent-2: #bfa14a;     /* muted gold/yellow, for highlights */
+  --lw-accent-2: #ffb300;     /* amber for highlights */
   --lw-accent-3: #343a40;     /* dark slate gray for borders */
   --lw-accent-4: #23272b;     /* very dark gray for button backgrounds */
 }
-
-/* Example usage:
-   <div class="bg-[var(--lw-bg)] text-[var(--lw-text)]">
-     ...
-   </div>
-*/
