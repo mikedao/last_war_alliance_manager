@@ -23,9 +23,25 @@
   </head>
 
   <body class="bg-[var(--lw-bg)] text-[var(--lw-text)]">
+    <% if flash[:notice] %>
+      <div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-semibold px-6 py-3 rounded-xl shadow-lg border-2 border-[var(--lw-accent-3)] animate-fade-in">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+    <% if flash[:alert] %>
+      <div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white font-semibold px-6 py-3 rounded-xl shadow-lg border-2 border-red-800 animate-fade-in">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
     <nav class="w-full fixed top-0 left-0 flex items-center justify-end gap-4 py-4 px-8 shadow z-50 bg-[var(--lw-surface)] text-[var(--lw-text)] border-b border-[var(--lw-accent-3)]">
-      <button class="rounded px-4 py-2 font-semibold border border-[var(--lw-accent-3)] bg-[var(--lw-accent-4)] text-[var(--lw-text)] hover:bg-[var(--lw-accent)] transition">Sign Up</button>
-      <button class="rounded px-4 py-2 font-semibold border border-[var(--lw-accent-3)] bg-transparent text-[var(--lw-text)] hover:bg-[var(--lw-accent)] transition">Login</button>
+      <% if logged_in? %>
+        <%= form_with url: logout_path, method: :delete, class: "inline" do %>
+          <%= submit_tag 'Logout', class: "rounded px-4 py-2 font-semibold border border-[var(--lw-accent-3)] bg-[var(--lw-accent-4)] text-[var(--lw-text)] hover:bg-[var(--lw-accent)] transition cursor-pointer" %>
+        <% end %>
+      <% else %>
+        <%= link_to 'Sign Up', signup_path, class: "rounded px-4 py-2 font-semibold border border-[var(--lw-accent-3)] bg-[var(--lw-accent-4)] text-[var(--lw-text)] hover:bg-[var(--lw-accent)] transition" %>
+        <button class="rounded px-4 py-2 font-semibold border border-[var(--lw-accent-3)] bg-transparent text-[var(--lw-text)] hover:bg-[var(--lw-accent)] transition">Login</button>
+      <% end %>
     </nav>
     <main class="container mx-auto mt-28 px-5 flex flex-col items-center justify-center min-h-[60vh] bg-[var(--lw-bg)] text-[var(--lw-text)]">
       <%= yield %>
