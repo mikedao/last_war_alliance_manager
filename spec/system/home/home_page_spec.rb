@@ -11,4 +11,4 @@ RSpec.describe 'Home Page', type: :system do
       expect(page).to have_button('Login')
     end
   end
-end 
+end
