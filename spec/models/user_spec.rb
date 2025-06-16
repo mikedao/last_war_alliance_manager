@@ -29,4 +29,26 @@ RSpec.describe User, type: :model do
       expect(user1.email).not_to eq(user2.email)
     end
   end
+
+  describe '#role_name' do
+    it 'returns "Global Admin" for global_admin role' do
+      user = build(:user, role: :global_admin)
+      expect(user.role_name).to eq('Global Admin')
+    end
+
+    it 'returns "Alliance Admin" for alliance_admin role' do
+      user = build(:user, role: :alliance_admin)
+      expect(user.role_name).to eq('Alliance Admin')
+    end
+
+    it 'returns "Alliance Manager" for alliance_manager role' do
+      user = build(:user, role: :alliance_manager)
+      expect(user.role_name).to eq('Alliance Manager')
+    end
+
+    it 'returns nil for user role' do
+      user = build(:user, role: :user)
+      expect(user.role_name).to be_nil
+    end
+  end
 end

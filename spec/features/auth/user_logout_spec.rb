@@ -13,10 +13,10 @@ RSpec.describe 'User Logout', type: :feature do
     fill_in 'Password confirmation', with: 'password123'
     click_on 'Create Account'
     # Now user is logged in
-    expect(page).to have_button('Logout')
+    expect(page).to have_selector(:link_or_button, 'Logout')
     click_on 'Logout'
     expect(page).to have_content('You have been logged out.')
-    expect(page).to have_link('Sign Up')
-    expect(page).to have_button('Login')
+    expect(page).to have_selector(:link_or_button, 'Sign Up')
+    expect(page).to have_selector(:link_or_button, 'Login')
   end
 end
