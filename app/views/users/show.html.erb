@@ -1,0 +1,16 @@
+<section class="flex justify-center items-center min-h-[60vh]">
+  <div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl px-10 py-12 max-w-md w-full">
+    <h1 class="font-bold text-3xl mb-6 text-[var(--lw-accent-2)] text-center">Your Profile</h1>
+    <div class="mb-6 space-y-2 text-[var(--lw-text)]">
+      <div><span class="font-semibold">Username:</span> <%= @user.username %></div>
+      <div><span class="font-semibold">Display name:</span> <%= @user.display_name %></div>
+      <div><span class="font-semibold">Email:</span> <%= @user.email %></div>
+      <div><span class="font-semibold">Role:</span> <%= @user.role %></div>
+    </div>
+    <div class="mb-4">
+      <%= link_to 'Create Alliance', new_alliance_path, class: "w-full block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold py-2 hover:bg-yellow-400 transition mb-2 text-center" %>
+      <div class="text-sm text-yellow-300 mb-4 text-center">For alliance leaders only!</div>
+      <button class="w-full rounded border border-[var(--lw-accent-3)] bg-transparent text-[var(--lw-text)] font-bold py-2 hover:bg-[var(--lw-accent-3)] transition">Join Existing Alliance</button>
+    </div>
+  </div>
+</section> 

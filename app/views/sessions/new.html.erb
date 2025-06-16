@@ -1,0 +1,32 @@
+<section class="flex justify-center items-center min-h-[60vh]">
+  <div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl px-10 py-12 max-w-md w-full">
+    <h1 class="font-bold text-3xl mb-6 text-[var(--lw-accent-2)] text-center">Log In</h1>
+    <% if @user.errors.any? %>
+      <div class="mb-4 p-4 rounded bg-[var(--lw-accent-4)] text-red-400 border border-red-700">
+        <ul class="list-disc list-inside text-sm">
+          <% @user.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <% if flash[:alert] %>
+      <div class="mb-4 p-4 rounded bg-red-600 text-white border border-red-800 text-center">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+    <%= form_with model: @user, url: login_path, class: "space-y-5", local: true do |f| %>
+      <div>
+        <%= f.label :username, class: "block text-sm font-semibold mb-1 text-[var(--lw-text)]" %>
+        <%= f.text_field :username, class: "w-full rounded px-3 py-2 bg-[var(--lw-bg)] text-[var(--lw-text)] border border-[var(--lw-accent-3)] focus:outline-none focus:ring-2 focus:ring-[var(--lw-accent-2)]" %>
+      </div>
+      <div>
+        <%= f.label :password, class: "block text-sm font-semibold mb-1 text-[var(--lw-text)]" %>
+        <%= f.password_field :password, class: "w-full rounded px-3 py-2 bg-[var(--lw-bg)] text-[var(--lw-text)] border border-[var(--lw-accent-3)] focus:outline-none focus:ring-2 focus:ring-[var(--lw-accent-2)]" %>
+      </div>
+      <div class="pt-2">
+        <%= f.submit "Log In", class: "w-full rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold py-2 hover:bg-yellow-400 transition" %>
+      </div>
+    <% end %>
+  </div>
+</section> 

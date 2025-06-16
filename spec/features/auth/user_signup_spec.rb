@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'User Sign Up', type: :feature do
   let(:existing_user) { User.create!(username: 'existinguser', display_name: 'Existing User', email: 'existing@example.com', password: 'password', password_confirmation: 'password') }
 
-  it 'allows a user to sign up with valid details and auto-logs in' do
+  it 'allows a user to sign up, auto-logs in, and shows their profile with alliance options' do
     visit root_path
     click_on 'Sign Up'
     fill_in 'Username', with: 'newuser'
@@ -12,8 +12,16 @@ RSpec.describe 'User Sign Up', type: :feature do
     fill_in 'Password', with: 'securepassword'
     fill_in 'Password confirmation', with: 'securepassword'
     click_on 'Create Account'
-    expect(page).to have_content('Welcome, New User')
-    expect(page).to have_button('Logout')
+
+    expect(page).to have_current_path('/profile')
+    expect(page).to have_content('Username: newuser')
+    expect(page).to have_content('Display name: New User')
+    expect(page).to have_content('Email: newuser@example.com')
+    expect(page).to have_content('Role: user')
+    expect(page).to have_selector(:link_or_button, 'Create Alliance')
+    expect(page).to have_content('For alliance leaders only!')
+    expect(page).to have_selector(:link_or_button, 'Join Existing Alliance')
+    expect(page).to have_selector(:link_or_button, 'Logout')
   end
 
   it 'shows an error if password and confirmation do not match' do

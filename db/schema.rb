@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_03_134243) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_03_192219) do
+  create_table "alliances", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "tag", null: false
+    t.text "description", null: false
+    t.string "server", null: false
+    t.integer "admin_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_alliances_on_admin_id"
+    t.index ["tag"], name: "index_alliances_on_tag", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "username", null: false
     t.string "display_name", null: false
@@ -22,4 +34,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_03_134243) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
+
+  add_foreign_key "alliances", "users", column: "admin_id"
 end
