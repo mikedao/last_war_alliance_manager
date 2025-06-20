@@ -71,5 +71,5 @@ jobs:
         run: bin/rails db:schema:load
 
       - name: Run RSpec tests
-        run: bin/rspec
+        run: bundle exec rspec
 
