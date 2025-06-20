@@ -23,7 +23,7 @@ RSpec.describe 'Alliance Creation', type: :feature do
     expect(page).to have_content('Tag: A1B2')
     expect(page).to have_content('Description: The best alliance!')
     expect(page).to have_content('Server: 12345')
-    expect(page).to have_content('Role: alliance_admin')
+    expect(page).to have_content('Role: Alliance Admin')
     expect(page).to have_content('Leader One')
     expect(page).not_to have_selector(:link_or_button, 'Create Alliance')
     expect(page).not_to have_selector(:link_or_button, 'Join Existing Alliance')
