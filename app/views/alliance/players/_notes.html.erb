@@ -1,0 +1,3 @@
+<%= link_to edit_notes_alliance_player_path(@alliance, player), class: "block w-full text-left p-2 rounded hover:bg-[var(--lw-accent-4)] transition cursor-pointer" do %>
+  <span class="truncate"><%= player.notes.presence || "Click to add notes" %></span>
+<% end %> 

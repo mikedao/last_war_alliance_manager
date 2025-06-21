@@ -1,0 +1,9 @@
+<%= form_with(model: player, url: update_notes_alliance_player_path(@alliance, player), method: :patch) do |form| %>
+  <div class="flex items-center">
+    <%= form.text_field :notes, class: "w-full px-2 py-1 border border-[var(--lw-accent-3)] rounded bg-[var(--lw-bg)] text-[var(--lw-text)] focus:outline-none focus:border-[var(--lw-accent-2)]" %>
+    <div class="flex items-center ml-2">
+      <%= form.submit "Save", class: "cursor-pointer rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-3 py-1 hover:bg-[var(--lw-accent)] transition" %>
+      <%= link_to "Cancel", cancel_edit_notes_alliance_player_path(@alliance, player), class: "ml-2 text-gray-500 hover:text-gray-300" %>
+    </div>
+  </div>
+<% end %> 

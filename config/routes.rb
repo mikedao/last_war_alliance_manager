@@ -24,6 +24,9 @@ Rails.application.routes.draw do
     resources :players, only: [ :index, :new, :create, :edit, :update, :destroy ], controller: "alliance/players" do
       member do
         patch :toggle_active
+        get :edit_notes
+        patch :update_notes
+        get :cancel_edit_notes
       end
       collection do
         get :bulk_add

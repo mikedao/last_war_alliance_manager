@@ -15,7 +15,11 @@
         <td class="py-3 px-4"><%= player.username %></td>
         <td class="py-3 px-4"><%= player.rank %></td>
         <td class="py-3 px-4"><%= player.level %></td>
-        <td class="py-3 px-4 max-w-xs"><%= player.notes %></td>
+        <td class="py-3 px-4 max-w-xs">
+          <%= turbo_frame_tag dom_id(player, :notes) do %>
+            <%= render 'alliance/players/notes', player: player %>
+          <% end %>
+        </td>
         <td class="py-3 px-4">
           <%= render 'alliance/players/status_switch', player: player, alliance: @alliance %>
         </td>
