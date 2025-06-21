@@ -34,6 +34,18 @@ RSpec.describe 'Alliance Players Management', type: :feature do
     expect(page).not_to have_content('otherplayer')
   end
 
+  it 'shows players sorted alphabetically by username, case-insensitively' do
+    create(:player, username: 'charlie', alliance: alliance)
+    create(:player, username: 'Bravo', alliance: alliance)
+    create(:player, username: 'alpha', alliance: alliance)
+
+    visit "/alliances/#{alliance.id}/players"
+
+    player_names = page.all('tbody tr td:first-child').map(&:text)
+    expected_order = [ 'activeplayer', 'alpha', 'Bravo', 'charlie', 'inactiveplayer' ]
+    expect(player_names).to eq(expected_order)
+  end
+
   it 'can filter to show only active players' do
     visit "/alliances/#{alliance.id}/players"
     click_on 'Active Only'

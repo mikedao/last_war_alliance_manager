@@ -69,6 +69,12 @@ jobs:
       - name: Set up database
         run: bin/rails db:schema:load
 
+      - name: Install Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser
+          sudo apt-get install -y libnss3 libxi6 libxcursor1 libxdamage1 libxtst6 libxrandr2 libasound2t64 libatk1.0-0 libgtk-3-0
+
       - name: Run RSpec tests
         run: bundle exec rspec
 
