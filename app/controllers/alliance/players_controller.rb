@@ -7,7 +7,7 @@ class Alliance::PlayersController < ApplicationController
   before_action :set_player, only: [ :edit, :update, :destroy, :toggle_active, :edit_notes, :update_notes, :cancel_edit_notes ]
 
   def index
-    @players = @alliance.players.order(Arel.sql('LOWER(username)'))
+    @players = @alliance.players.order(Arel.sql("LOWER(username)"))
     @players = @players.where(active: true) if params[:filter] == "active"
     @players = @players.where(active: false) if params[:filter] == "inactive"
 

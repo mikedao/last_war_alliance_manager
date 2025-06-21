@@ -61,4 +61,4 @@ RSpec.describe 'Inline Player Notes Editing', type: :feature do
     expect(page).to have_content("Initial notes.")
     expect(page).not_to have_button("Save")
   end
-end 
+end

@@ -42,7 +42,7 @@ RSpec.describe 'Alliance Players Management', type: :feature do
     visit "/alliances/#{alliance.id}/players"
 
     player_names = page.all('tbody tr td:first-child').map(&:text)
-    expected_order = ['activeplayer', 'alpha', 'Bravo', 'charlie', 'inactiveplayer']
+    expected_order = [ 'activeplayer', 'alpha', 'Bravo', 'charlie', 'inactiveplayer' ]
     expect(player_names).to eq(expected_order)
   end
 
