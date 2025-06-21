@@ -1,13 +1,23 @@
 <section class="flex justify-center items-center min-h-[60vh]">
   <div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl px-10 py-12 max-w-lg w-full">
     <h1 class="font-bold text-3xl mb-6 text-[var(--lw-accent-2)] text-center">Alliance Dashboard</h1>
-    <div class="mb-6 space-y-2 text-[var(--lw-text)]">
-      <div><span class="font-semibold">Alliance:</span> <%= @alliance.name %></div>
-      <div><span class="font-semibold">Tag:</span> <%= @alliance.tag %></div>
-      <div><span class="font-semibold">Description:</span> <%= @alliance.description %></div>
-      <div><span class="font-semibold">Server:</span> <%= @alliance.server %></div>
-      <div><span class="font-semibold">Admin:</span> <%= @alliance.admin.display_name %></div>
-    </div>
+    
+    <% if @alliance %>
+      <div class="mb-6 space-y-2 text-[var(--lw-text)]">
+        <div><span class="font-semibold">Alliance:</span> <%= @alliance.name %></div>
+        <div><span class="font-semibold">Tag:</span> <%= @alliance.tag %></div>
+        <div><span class="font-semibold">Description:</span> <%= @alliance.description %></div>
+        <div><span class="font-semibold">Server:</span> <%= @alliance.server %></div>
+        <div><span class="font-semibold">Admin:</span> <%= @alliance.admin.display_name %></div>
+      </div>
+    <% else %>
+      <div class="mb-6 text-center text-[var(--lw-text)]">
+        <p class="text-lg mb-4">You don't belong to an alliance yet.</p>
+        <p class="mb-6">Create an alliance to get started with managing your Last War alliance!</p>
+        <%= link_to 'Create Alliance', new_alliance_path, class: "inline-block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-6 py-3 hover:bg-[var(--lw-accent)] transition" %>
+      </div>
+    <% end %>
+    
     <div class="mt-4 text-center">
       <span class="inline-block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-4 py-2">Role: <%= current_user.role_name %></span>
     </div>

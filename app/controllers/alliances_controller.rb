@@ -27,7 +27,7 @@ class AlliancesController < ApplicationController
   def show
     @alliance = current_user.alliance
     unless @alliance
-      redirect_to profile_path, alert: "You do not belong to an alliance."
+      flash.now[:notice] = "You do not belong to an alliance yet. Create one to get started!"
     end
   end
 
