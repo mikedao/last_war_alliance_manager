@@ -60,7 +60,7 @@ RSpec.describe 'Alliance Players Management', type: :feature do
     within("tr[data-player-username='activeplayer']") do
       expect(page).to have_link('Edit')
       expect(page).to have_button('Delete')
-      expect(page).to have_selector('.toggle-active')
+      expect(page).to have_selector('input[type="checkbox"]')
     end
   end
 

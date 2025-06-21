@@ -21,7 +21,11 @@ Rails.application.routes.draw do
   get "profile", to: "users#show", as: :profile
 
   resources :alliances, only: [ :new, :create ] do
-    resources :players, only: [ :index, :new, :create, :edit, :update, :destroy ], controller: 'alliance/players'
+    resources :players, only: [ :index, :new, :create, :edit, :update, :destroy ], controller: 'alliance/players' do
+      member do
+        patch :toggle_active
+      end
+    end
   end
   get "dashboard", to: "alliances#show", as: :dashboard
 end

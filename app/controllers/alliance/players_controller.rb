@@ -2,7 +2,7 @@ class Alliance::PlayersController < ApplicationController
   before_action :require_login
   before_action :require_alliance_admin
   before_action :set_alliance
-  before_action :set_player, only: [:edit, :update, :destroy]
+  before_action :set_player, only: [:edit, :update, :destroy, :toggle_active]
 
   def index
     @players = @alliance.players
@@ -33,6 +33,21 @@ class Alliance::PlayersController < ApplicationController
   def destroy
     @player.destroy
     redirect_to alliance_players_path(@alliance), notice: 'Player deleted successfully!'
+  end
+
+  def toggle_active
+    @player.update!(active: !@player.active?)
+    
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          "player_status_#{@player.id}",
+          partial: "alliance/players/status_switch",
+          locals: { player: @player, alliance: @alliance }
+        )
+      end
+      format.html { redirect_to alliance_players_path(@alliance) }
+    end
   end
 
   private
