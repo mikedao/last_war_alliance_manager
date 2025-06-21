@@ -4,6 +4,14 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_user, :logged_in?, :show_dashboard_link?
 
+  protected
+
+  def require_login
+    unless logged_in?
+      redirect_to root_path, alert: "You must be logged in to view your profile."
+    end
+  end
+
   private
 
   def current_user

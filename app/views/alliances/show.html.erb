@@ -10,6 +10,13 @@
         <div><span class="font-semibold">Server:</span> <%= @alliance.server %></div>
         <div><span class="font-semibold">Admin:</span> <%= @alliance.admin.display_name %></div>
       </div>
+      
+      <% if current_user.alliance_admin? %>
+        <div class="mb-6 text-center">
+          <h2 class="text-xl font-semibold mb-4 text-[var(--lw-accent-2)]">Management</h2>
+          <%= link_to 'Manage Players', alliance_players_path(@alliance), class: "inline-block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-6 py-3 hover:bg-[var(--lw-accent)] transition" %>
+        </div>
+      <% end %>
     <% else %>
       <div class="mb-6 text-center text-[var(--lw-text)]">
         <p class="text-lg mb-4">You don't belong to an alliance yet.</p>

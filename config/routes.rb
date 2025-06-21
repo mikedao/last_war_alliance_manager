@@ -20,6 +20,8 @@ Rails.application.routes.draw do
 
   get "profile", to: "users#show", as: :profile
 
-  resources :alliances, only: [ :new, :create ]
+  resources :alliances, only: [ :new, :create ] do
+    resources :players, only: [ :index, :new, :create, :edit, :update, :destroy ], controller: 'alliance/players'
+  end
   get "dashboard", to: "alliances#show", as: :dashboard
 end
