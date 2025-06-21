@@ -1,5 +1,5 @@
 <section class="flex justify-center items-center min-h-[60vh]">
-  <div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl px-10 py-12 max-w-lg w-full">
+  <div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl px-6 sm:px-10 py-8 sm:py-12 max-w-5xl w-full mx-4">
     <h1 class="font-bold text-3xl mb-6 text-[var(--lw-accent-2)] text-center">Alliance Dashboard</h1>
     
     <% if @alliance %>
@@ -26,7 +26,7 @@
     <% end %>
     
     <div class="mt-4 text-center">
-      <span class="inline-block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-4 py-2">Role: <%= current_user.role_name %></span>
+      <span class="text-[var(--lw-text)] font-medium">Role: <%= current_user.role_name %></span>
     </div>
   </div>
 </section>
