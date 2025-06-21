@@ -12,6 +12,7 @@ RSpec.describe 'Inline Player Notes Editing', type: :feature do
     fill_in 'Username', with: admin_user.username
     fill_in 'Password', with: 'password123'
     click_on 'Log In'
+    expect(page).to have_content('Dashboard') # Wait for login to complete
     visit alliance_players_path(alliance)
   end
 
