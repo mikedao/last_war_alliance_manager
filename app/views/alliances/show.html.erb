@@ -14,7 +14,10 @@
       <% if current_user.alliance_admin? %>
         <div class="mb-6 text-center">
           <h2 class="text-xl font-semibold mb-4 text-[var(--lw-accent-2)]">Management</h2>
-          <%= link_to 'Manage Players', alliance_players_path(@alliance), class: "inline-block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-6 py-3 hover:bg-[var(--lw-accent)] transition" %>
+          <div class="flex gap-4 justify-center">
+            <%= link_to 'Manage Players', alliance_players_path(@alliance), class: "inline-block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-6 py-3 hover:bg-[var(--lw-accent)] transition" %>
+            <%= link_to 'Bulk Add Players', bulk_add_alliance_players_path(@alliance), class: "inline-block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-6 py-3 hover:bg-[var(--lw-accent)] transition" %>
+          </div>
         </div>
       <% end %>
     <% else %>

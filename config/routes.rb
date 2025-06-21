@@ -25,6 +25,10 @@ Rails.application.routes.draw do
       member do
         patch :toggle_active
       end
+      collection do
+        get :bulk_add
+        post :bulk_create
+      end
     end
   end
   get "dashboard", to: "alliances#show", as: :dashboard
