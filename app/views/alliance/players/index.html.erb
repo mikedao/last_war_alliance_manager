@@ -1,28 +1,19 @@
-<section class="flex justify-center items-center min-h-[60vh]">
-  <div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl px-10 py-12 max-w-6xl w-full">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="font-bold text-3xl text-[var(--lw-accent-2)]">Players in Your Alliance</h1>
+<div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl p-10">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="font-bold text-3xl text-[var(--lw-accent-2)]">Players in Your Alliance</h1>
+    <div class="flex gap-4">
       <%= link_to 'Create New Player', new_alliance_player_path(@alliance), class: "rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-4 py-2 hover:bg-[var(--lw-accent)] transition" %>
-    </div>
-
-    <turbo-frame id="flash">
-      <% if notice %>
-        <%= render 'shared/flash', message: notice, type: 'notice' %>
-      <% end %>
-    </turbo-frame>
-
-    <div class="mb-6">
-      <div class="flex gap-2">
-        <%= link_to 'All Players', alliance_players_path(@alliance), class: "px-4 py-2 rounded #{params[:filter].blank? ? 'bg-[var(--lw-accent-2)] text-[var(--lw-bg)]' : 'bg-[var(--lw-accent-4)] text-[var(--lw-text)]'} transition", data: { turbo_frame: 'players_table' } %>
-        <%= link_to 'Active Only', alliance_players_path(@alliance, filter: 'active'), class: "px-4 py-2 rounded #{params[:filter] == 'active' ? 'bg-[var(--lw-accent-2)] text-[var(--lw-bg)]' : 'bg-[var(--lw-accent-4)] text-[var(--lw-text)]'} transition", data: { turbo_frame: 'players_table' } %>
-        <%= link_to 'Inactive Only', alliance_players_path(@alliance, filter: 'inactive'), class: "px-4 py-2 rounded #{params[:filter] == 'inactive' ? 'bg-[var(--lw-accent-2)] text-[var(--lw-bg)]' : 'bg-[var(--lw-accent-4)] text-[var(--lw-text)]'} transition", data: { turbo_frame: 'players_table' } %>
-      </div>
-    </div>
-
-    <div class="overflow-x-auto">
-      <turbo-frame id="players_table">
-        <%= render 'alliance/players/table' %>
-      </turbo-frame>
+      <%= link_to 'Bulk Add Players', bulk_add_alliance_players_path(@alliance), class: "rounded bg-[var(--lw-accent-4)] text-[var(--lw-text)] font-bold px-4 py-2 hover:bg-[var(--lw-accent-3)] transition" %>
     </div>
   </div>
-</section>
+
+  <turbo-frame id="flash">
+    <% if notice %>
+      <%= render 'shared/flash', message: notice, type: 'notice' %>
+    <% end %>
+  </turbo-frame>
+
+  <turbo-frame id="players_list">
+    <%= render 'alliance/players/list' %>
+  </turbo-frame>
+</div>
