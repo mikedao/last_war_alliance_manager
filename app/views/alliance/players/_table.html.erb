@@ -1,0 +1,31 @@
+<table class="w-full text-[var(--lw-text)]">
+  <thead>
+    <tr class="border-b border-[var(--lw-accent-3)]">
+      <th class="text-left py-3 px-4">Username</th>
+      <th class="text-left py-3 px-4">Rank</th>
+      <th class="text-left py-3 px-4">Level</th>
+      <th class="text-left py-3 px-4">Notes</th>
+      <th class="text-left py-3 px-4">Status</th>
+      <th class="text-left py-3 px-4">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @players.each do |player| %>
+      <tr class="border-b border-[var(--lw-accent-3)]" data-player-username="<%= player.username %>">
+        <td class="py-3 px-4"><%= player.username %></td>
+        <td class="py-3 px-4"><%= player.rank %></td>
+        <td class="py-3 px-4"><%= player.level %></td>
+        <td class="py-3 px-4 max-w-xs"><%= player.notes %></td>
+        <td class="py-3 px-4">
+          <%= render 'alliance/players/status_switch', player: player, alliance: @alliance %>
+        </td>
+        <td class="py-3 px-4">
+          <div class="flex gap-2">
+            <%= link_to 'Edit', edit_alliance_player_path(@alliance, player), class: "text-blue-400 hover:text-blue-300" %>
+            <%= button_to 'Delete', alliance_player_path(@alliance, player), method: :delete, class: "text-red-400 hover:text-red-300 bg-transparent border-none p-0", form: { style: 'display: inline;' } %>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table> 

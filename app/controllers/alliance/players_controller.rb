@@ -8,6 +8,11 @@ class Alliance::PlayersController < ApplicationController
     @players = @alliance.players
     @players = @players.where(active: true) if params[:filter] == 'active'
     @players = @players.where(active: false) if params[:filter] == 'inactive'
+
+    respond_to do |format|
+      format.html
+      format.turbo_stream { render partial: 'alliance/players/table', formats: :html }
+    end
   end
 
   def new
