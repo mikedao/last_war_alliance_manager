@@ -16,9 +16,6 @@ RSpec.describe 'Inline Player Notes Editing', type: :feature do
   end
 
   it 'allows inline editing by clicking on the notes text', js: true do
-    # Debug: print the page HTML at the start
-    puts "INITIAL PAGE HTML:\n#{page.html}"
-    
     # Check for content instead of the frame selector
     expect(page).to have_content("Initial notes.")
 
