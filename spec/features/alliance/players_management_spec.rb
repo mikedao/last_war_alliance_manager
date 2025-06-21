@@ -99,4 +99,4 @@ RSpec.describe 'Alliance Players Management', type: :feature do
       expect(page).to have_content('You must be an alliance admin to manage players.')
     end
   end
-end 
+end

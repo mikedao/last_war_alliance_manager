@@ -16,7 +16,7 @@ RSpec.describe 'Alliance Player Toggle', type: :feature do
   describe 'toggling player status' do
     it 'shows the correct initial state for active players' do
       visit "/alliances/#{alliance.id}/players"
-      
+
       within("tr[data-player-username='ActivePlayer']") do
         expect(page).to have_content('Active')
         expect(page).to have_selector('input[type="checkbox"]')
@@ -25,7 +25,7 @@ RSpec.describe 'Alliance Player Toggle', type: :feature do
 
     it 'shows the correct initial state for inactive players' do
       visit "/alliances/#{alliance.id}/players"
-      
+
       within("tr[data-player-username='InactivePlayer']") do
         expect(page).to have_content('Inactive')
         expect(page).to have_selector('input[type="checkbox"]')
@@ -34,17 +34,17 @@ RSpec.describe 'Alliance Player Toggle', type: :feature do
 
     it 'toggles an active player to inactive' do
       visit "/alliances/#{alliance.id}/players"
-      
+
       within("tr[data-player-username='ActivePlayer']") do
         expect(page).to have_content('Active')
         find('td:nth-child(5) button[type="submit"]').click
       end
-      
+
       # Should update instantly via Turbo
       within("tr[data-player-username='ActivePlayer']") do
         expect(page).to have_content('Inactive')
       end
-      
+
       # Verify the change persisted
       active_player.reload
       expect(active_player.active?).to be false
@@ -52,17 +52,17 @@ RSpec.describe 'Alliance Player Toggle', type: :feature do
 
     it 'toggles an inactive player to active' do
       visit "/alliances/#{alliance.id}/players"
-      
+
       within("tr[data-player-username='InactivePlayer']") do
         expect(page).to have_content('Inactive')
         find('td:nth-child(5) button[type="submit"]').click
       end
-      
+
       # Should update instantly via Turbo
       within("tr[data-player-username='InactivePlayer']") do
         expect(page).to have_content('Active')
       end
-      
+
       # Verify the change persisted
       inactive_player.reload
       expect(inactive_player.active?).to be true
@@ -70,24 +70,24 @@ RSpec.describe 'Alliance Player Toggle', type: :feature do
 
     it 'updates the player count in filtered views' do
       visit "/alliances/#{alliance.id}/players"
-      
+
       # Initially should have 1 active and 1 inactive
       click_on 'Active Only'
       expect(page).to have_content('ActivePlayer')
       expect(page).not_to have_content('InactivePlayer')
-      
+
       click_on 'All Players'
-      
+
       # Toggle the active player to inactive
       within("tr[data-player-username='ActivePlayer']") do
         find('td:nth-child(5) button[type="submit"]').click
       end
-      
+
       # Now should have 0 active and 2 inactive
       click_on 'Active Only'
       expect(page).not_to have_content('ActivePlayer')
       expect(page).not_to have_content('InactivePlayer')
-      
+
       click_on 'Inactive Only'
       expect(page).to have_content('ActivePlayer')
       expect(page).to have_content('InactivePlayer')
@@ -95,28 +95,28 @@ RSpec.describe 'Alliance Player Toggle', type: :feature do
 
     it 'works with multiple players' do
       third_player = create(:player, username: 'ThirdPlayer', alliance: alliance, active: true)
-      
+
       visit "/alliances/#{alliance.id}/players"
-      
+
       # Toggle first player
       within("tr[data-player-username='ActivePlayer']") do
         find('td:nth-child(5) button[type="submit"]').click
       end
-      
+
       # Toggle third player
       within("tr[data-player-username='ThirdPlayer']") do
         find('td:nth-child(5) button[type="submit"]').click
       end
-      
+
       # Verify both changes
       within("tr[data-player-username='ActivePlayer']") do
         expect(page).to have_content('Inactive')
       end
-      
+
       within("tr[data-player-username='ThirdPlayer']") do
         expect(page).to have_content('Inactive')
       end
-      
+
       # Inactive player should still be inactive
       within("tr[data-player-username='InactivePlayer']") do
         expect(page).to have_content('Inactive')
@@ -125,17 +125,17 @@ RSpec.describe 'Alliance Player Toggle', type: :feature do
 
     it 'does not cause a page reload' do
       visit "/alliances/#{alliance.id}/players"
-      
+
       # Store the current URL
       current_url = page.current_url
-      
+
       within("tr[data-player-username='ActivePlayer']") do
         find('td:nth-child(5) button[type="submit"]').click
       end
-      
+
       # Should still be on the same page
       expect(page.current_url).to eq(current_url)
-      
+
       # Should still be on the players index
       expect(page).to have_content('Players in Your Alliance')
     end
@@ -177,4 +177,4 @@ RSpec.describe 'Alliance Player Toggle', type: :feature do
       expect(page).to have_content('You must be an alliance admin to manage players.')
     end
   end
-end 
+end

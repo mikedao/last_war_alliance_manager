@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
 
   def show_dashboard_link?
     return false unless logged_in?
-    
+
     %w[global_admin alliance_admin alliance_manager].include?(current_user.role)
   end
 end

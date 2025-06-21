@@ -110,4 +110,4 @@ RSpec.describe 'Dashboard Access', type: :feature do
     fill_in 'Password', with: 'password123'
     click_on 'Log In'
   end
-end 
+end

@@ -21,15 +21,15 @@ RSpec.describe 'Alliance Player Creation', type: :feature do
 
     it 'creates a new player with valid data' do
       visit "/alliances/#{alliance.id}/players/new"
-      
+
       fill_in 'Username', with: 'NewPlayer'
       select 'R3', from: 'Rank'
       fill_in 'Level', with: '75'
       fill_in 'Notes', with: 'A promising new recruit'
       check 'Active'
-      
+
       click_on 'Create Player'
-      
+
       expect(page).to have_current_path("/alliances/#{alliance.id}/players/new")
       expect(page).to have_content('Player created successfully!')
       visit "/alliances/#{alliance.id}/players"
@@ -41,20 +41,20 @@ RSpec.describe 'Alliance Player Creation', type: :feature do
 
     it 'creates a new inactive player when active checkbox is unchecked' do
       visit "/alliances/#{alliance.id}/players/new"
-      
+
       fill_in 'Username', with: 'InactivePlayer'
       select 'R2', from: 'Rank'
       fill_in 'Level', with: '60'
       fill_in 'Notes', with: 'On temporary leave'
       uncheck 'Active'
-      
+
       click_on 'Create Player'
-      
+
       expect(page).to have_current_path("/alliances/#{alliance.id}/players/new")
       expect(page).to have_content('Player created successfully!')
       visit "/alliances/#{alliance.id}/players"
       expect(page).to have_content('InactivePlayer')
-      
+
       # Check that the player shows as inactive
       within('tbody') do
         expect(page).to have_selector("tr[data-player-username='InactivePlayer']")
@@ -66,10 +66,10 @@ RSpec.describe 'Alliance Player Creation', type: :feature do
 
     it 'shows validation errors for invalid data' do
       visit "/alliances/#{alliance.id}/players/new"
-      
+
       # Try to submit without required fields
       click_on 'Create Player'
-      
+
       expect(page).to have_content('Username can\'t be blank')
       expect(page).to have_content('Rank can\'t be blank')
       expect(page).to have_content('Level can\'t be blank')
@@ -77,75 +77,75 @@ RSpec.describe 'Alliance Player Creation', type: :feature do
 
     it 'validates rank format' do
       visit "/alliances/#{alliance.id}/players/new"
-      
+
       fill_in 'Username', with: 'TestPlayer'
       fill_in 'Level', with: '50'
       fill_in 'Notes', with: 'Test notes'
-      
+
       # Try invalid rank by selecting an invalid option
       select 'Select a rank', from: 'Rank'
       click_on 'Create Player'
-      
+
       expect(page).to have_content('Rank can\'t be blank')
     end
 
     it 'validates level range' do
       visit "/alliances/#{alliance.id}/players/new"
-      
+
       fill_in 'Username', with: 'TestPlayer'
       select 'R2', from: 'Rank'
       fill_in 'Notes', with: 'Test notes'
-      
+
       # Try invalid level
       fill_in 'Level', with: '150'
       click_on 'Create Player'
-      
+
       expect(page).to have_content('Level must be less than or equal to 100')
     end
 
     it 'validates level minimum' do
       visit "/alliances/#{alliance.id}/players/new"
-      
+
       fill_in 'Username', with: 'TestPlayer'
       select 'R2', from: 'Rank'
       fill_in 'Notes', with: 'Test notes'
-      
+
       # Try invalid level
       fill_in 'Level', with: '0'
       click_on 'Create Player'
-      
+
       expect(page).to have_content('Level must be greater than or equal to 1')
     end
 
     it 'prevents duplicate usernames within the same alliance' do
       # Create a player first
       create(:player, username: 'ExistingPlayer', alliance: alliance)
-      
+
       visit "/alliances/#{alliance.id}/players/new"
-      
+
       fill_in 'Username', with: 'ExistingPlayer'
       select 'R3', from: 'Rank'
       fill_in 'Level', with: '70'
       fill_in 'Notes', with: 'Duplicate username'
-      
+
       click_on 'Create Player'
-      
+
       expect(page).to have_content('Username has already been taken')
     end
 
     it 'allows same username in different alliances' do
       other_alliance = create(:alliance, admin: create(:user))
       create(:player, username: 'SharedName', alliance: other_alliance)
-      
+
       visit "/alliances/#{alliance.id}/players/new"
-      
+
       fill_in 'Username', with: 'SharedName'
       select 'R3', from: 'Rank'
       fill_in 'Level', with: '70'
       fill_in 'Notes', with: 'Same name as other alliance'
-      
+
       click_on 'Create Player'
-      
+
       expect(page).to have_current_path("/alliances/#{alliance.id}/players/new")
       expect(page).to have_content('Player created successfully!')
       visit "/alliances/#{alliance.id}/players"
@@ -188,4 +188,4 @@ RSpec.describe 'Alliance Player Creation', type: :feature do
       expect(page).to have_content('You must be an alliance admin to manage players.')
     end
   end
-end 
+end

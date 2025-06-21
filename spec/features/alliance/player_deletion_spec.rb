@@ -39,14 +39,14 @@ RSpec.describe 'Alliance Player Deletion', type: :feature do
 
     it 'deletes the correct player when multiple players exist' do
       third_player = create(:player, username: 'ThirdPlayer', alliance: alliance)
-      
+
       visit "/alliances/#{alliance.id}/players"
-      
+
       # Delete the middle player
       within("tr[data-player-username='OtherPlayer']") do
         click_on 'Delete'
       end
-      
+
       expect(page).to have_content('Player deleted successfully!')
       expect(page).to have_content('PlayerToDelete')
       expect(page).not_to have_content('OtherPlayer')
@@ -55,14 +55,14 @@ RSpec.describe 'Alliance Player Deletion', type: :feature do
 
     it 'works with active and inactive players' do
       inactive_player = create(:player, username: 'InactivePlayer', alliance: alliance, active: false)
-      
+
       visit "/alliances/#{alliance.id}/players"
-      
+
       # Delete inactive player
       within("tr[data-player-username='InactivePlayer']") do
         click_on 'Delete'
       end
-      
+
       expect(page).to have_content('Player deleted successfully!')
       expect(page).not_to have_content('InactivePlayer')
       expect(page).to have_content('PlayerToDelete')
@@ -70,18 +70,18 @@ RSpec.describe 'Alliance Player Deletion', type: :feature do
 
     it 'works when filtering players' do
       inactive_player = create(:player, username: 'InactivePlayer', alliance: alliance, active: false)
-      
+
       visit "/alliances/#{alliance.id}/players"
       click_on 'Inactive Only'
-      
+
       # Delete inactive player from filtered view
       within("tr[data-player-username='InactivePlayer']") do
         click_on 'Delete'
       end
-      
+
       expect(page).to have_content('Player deleted successfully!')
       expect(page).not_to have_content('InactivePlayer')
-      
+
       # Switch back to all players to confirm it's gone
       click_on 'All Players'
       expect(page).not_to have_content('InactivePlayer')
@@ -89,16 +89,16 @@ RSpec.describe 'Alliance Player Deletion', type: :feature do
 
     it 'updates the player count after deletion' do
       visit "/alliances/#{alliance.id}/players"
-      
+
       # Should have 2 players initially
       expect(page).to have_content('PlayerToDelete')
       expect(page).to have_content('OtherPlayer')
-      
+
       # Delete one player
       within("tr[data-player-username='PlayerToDelete']") do
         click_on 'Delete'
       end
-      
+
       expect(page).to have_content('Player deleted successfully!')
       expect(page).not_to have_content('PlayerToDelete')
       expect(page).to have_content('OtherPlayer')
@@ -148,12 +148,12 @@ RSpec.describe 'Alliance Player Deletion', type: :feature do
 
     it 'cannot see or access players from other alliances' do
       visit "/alliances/#{alliance.id}/players"
-      
+
       # Should not see players from other alliance
       expect(page).not_to have_content('OtherAlliancePlayer')
-      
+
       # The delete button for other alliance players should not exist
       expect(page).not_to have_selector("tr[data-player-username='OtherAlliancePlayer']")
     end
   end
-end 
+end

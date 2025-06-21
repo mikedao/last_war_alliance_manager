@@ -7,4 +7,4 @@ FactoryBot.define do
     active { true }
     association :alliance
   end
-end 
+end

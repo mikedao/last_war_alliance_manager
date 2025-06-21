@@ -52,7 +52,7 @@ RSpec.describe Player, type: :model do
 
     describe 'level validation' do
       it 'accepts levels between 1 and 100' do
-        [1, 50, 100].each do |level|
+        [ 1, 50, 100 ].each do |level|
           player = build(:player, level: level, alliance: alliance)
           expect(player).to be_valid
         end
@@ -89,4 +89,4 @@ RSpec.describe Player, type: :model do
       expect(player.active).to be true
     end
   end
-end 
+end

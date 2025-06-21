@@ -6,4 +6,4 @@ FactoryBot.define do
     server { "123" }
     association :admin, factory: :user
   end
-end 
+end
