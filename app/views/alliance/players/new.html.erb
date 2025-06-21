@@ -1,4 +1,54 @@
-<div>
-  <h1 class="font-bold text-4xl">Alliance::Players#new</h1>
-  <p>Find me in app/views/alliance/players/new.html.erb</p>
-</div>
+<section class="flex justify-center items-center min-h-[60vh]">
+  <div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl px-6 sm:px-10 py-8 sm:py-12 max-w-2xl w-full mx-4">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="font-bold text-3xl text-[var(--lw-accent-2)]">Add New Player</h1>
+      <%= link_to 'Back', alliance_players_path(@alliance), class: "text-[var(--lw-accent-2)] hover:text-[var(--lw-accent)] transition" %>
+    </div>
+
+    <%= form_with model: [@alliance, @player], local: true, class: "space-y-6" do |form| %>
+      <% if @player.errors.any? %>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <h2 class="font-bold mb-2">Please fix the following errors:</h2>
+          <ul class="list-disc list-inside">
+            <% @player.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.label :username, class: "block text-[var(--lw-text)] font-semibold mb-2" %>
+        <%= form.text_field :username, class: "w-full px-3 py-2 border border-[var(--lw-accent-3)] rounded bg-[var(--lw-bg)] text-[var(--lw-text)] focus:outline-none focus:border-[var(--lw-accent-2)]" %>
+      </div>
+
+      <div>
+        <%= form.label :rank, class: "block text-[var(--lw-text)] font-semibold mb-2" %>
+        <%= form.select :rank, 
+            options_for_select([['R1', 'R1'], ['R2', 'R2'], ['R3', 'R3'], ['R4', 'R4'], ['R5', 'R5']], @player.rank),
+            { prompt: 'Select a rank' },
+            { class: "w-full px-3 py-2 border border-[var(--lw-accent-3)] rounded bg-[var(--lw-bg)] text-[var(--lw-text)] focus:outline-none focus:border-[var(--lw-accent-2)]" } %>
+      </div>
+
+      <div>
+        <%= form.label :level, class: "block text-[var(--lw-text)] font-semibold mb-2" %>
+        <%= form.number_field :level, min: 1, max: 100, class: "w-full px-3 py-2 border border-[var(--lw-accent-3)] rounded bg-[var(--lw-bg)] text-[var(--lw-text)] focus:outline-none focus:border-[var(--lw-accent-2)]" %>
+      </div>
+
+      <div>
+        <%= form.label :notes, class: "block text-[var(--lw-text)] font-semibold mb-2" %>
+        <%= form.text_area :notes, rows: 4, class: "w-full px-3 py-2 border border-[var(--lw-accent-3)] rounded bg-[var(--lw-bg)] text-[var(--lw-text)] focus:outline-none focus:border-[var(--lw-accent-2)] resize-none" %>
+      </div>
+
+      <div class="flex items-center">
+        <%= form.check_box :active, class: "w-4 h-4 text-[var(--lw-accent-2)] border-[var(--lw-accent-3)] rounded focus:ring-[var(--lw-accent-2)]" %>
+        <%= form.label :active, class: "ml-2 text-[var(--lw-text)] font-semibold" %>
+      </div>
+
+      <div class="flex gap-4 pt-4">
+        <%= form.submit 'Create Player', class: "flex-1 bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold py-3 px-6 rounded hover:bg-[var(--lw-accent)] transition" %>
+        <%= link_to 'Cancel', alliance_players_path(@alliance), class: "flex-1 bg-[var(--lw-accent-4)] text-[var(--lw-text)] font-bold py-3 px-6 rounded hover:bg-[var(--lw-accent-3)] transition text-center" %>
+      </div>
+    <% end %>
+  </div>
+</section>
