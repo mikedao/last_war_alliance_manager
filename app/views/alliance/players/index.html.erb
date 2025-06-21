@@ -5,6 +5,12 @@
       <%= link_to 'Create New Player', new_alliance_player_path(@alliance), class: "rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-4 py-2 hover:bg-[var(--lw-accent)] transition" %>
     </div>
 
+    <turbo-frame id="flash">
+      <% if notice %>
+        <%= render 'shared/flash', message: notice, type: 'notice' %>
+      <% end %>
+    </turbo-frame>
+
     <div class="mb-6">
       <div class="flex gap-2">
         <%= link_to 'All Players', alliance_players_path(@alliance), class: "px-4 py-2 rounded #{params[:filter].blank? ? 'bg-[var(--lw-accent-2)] text-[var(--lw-bg)]' : 'bg-[var(--lw-accent-4)] text-[var(--lw-text)]'} transition", data: { turbo_frame: 'players_table' } %>

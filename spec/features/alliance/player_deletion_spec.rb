@@ -21,17 +21,20 @@ RSpec.describe 'Alliance Player Deletion', type: :feature do
       end
     end
 
-    it 'deletes a player when delete button is clicked' do
+    it 'deletes a player with Turbo and shows a turbo-powered flash message' do
       visit "/alliances/#{alliance.id}/players"
-      
+
+      # Ensure the turbo frame for the flash is present
+      expect(page).to have_selector('turbo-frame[id="flash"]')
+
       within("tr[data-player-username='PlayerToDelete']") do
         click_on 'Delete'
       end
-      
-      expect(page).to have_current_path("/alliances/#{alliance.id}/players")
+
+      # The row should disappear without a full reload
+      expect(page).not_to have_selector("tr[data-player-username='PlayerToDelete']")
       expect(page).to have_content('Player deleted successfully!')
-      expect(page).not_to have_content('PlayerToDelete')
-      expect(page).to have_content('OtherPlayer') # Other player should still exist
+      expect(page).to have_content('OtherPlayer')
     end
 
     it 'deletes the correct player when multiple players exist' do

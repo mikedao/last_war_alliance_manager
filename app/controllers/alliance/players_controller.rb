@@ -86,7 +86,16 @@ class Alliance::PlayersController < ApplicationController
 
   def destroy
     @player.destroy
-    redirect_to alliance_players_path(@alliance), notice: 'Player deleted successfully!'
+    
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.remove("player_row_#{@player.id}"),
+          turbo_stream.update("flash", partial: "shared/flash", locals: { message: "Player deleted successfully!", type: "notice" })
+        ]
+      end
+      format.html { redirect_to alliance_players_path(@alliance), notice: 'Player deleted successfully!' }
+    end
   end
 
   def toggle_active
