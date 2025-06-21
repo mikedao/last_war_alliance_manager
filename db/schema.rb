@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_03_192219) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_21_162303) do
   create_table "alliances", force: :cascade do |t|
     t.string "name", null: false
     t.string "tag", null: false
@@ -21,6 +21,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_03_192219) do
     t.datetime "updated_at", null: false
     t.index ["admin_id"], name: "index_alliances_on_admin_id"
     t.index ["tag"], name: "index_alliances_on_tag", unique: true
+  end
+
+  create_table "players", force: :cascade do |t|
+    t.string "username", null: false
+    t.string "rank", null: false
+    t.integer "level", null: false
+    t.text "notes"
+    t.boolean "active", default: true, null: false
+    t.integer "alliance_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["alliance_id"], name: "index_players_on_alliance_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -36,4 +48,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_03_192219) do
   end
 
   add_foreign_key "alliances", "users", column: "admin_id"
+  add_foreign_key "players", "alliances"
 end

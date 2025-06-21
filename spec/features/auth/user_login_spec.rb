@@ -9,9 +9,8 @@ RSpec.describe 'User Login', type: :feature do
     fill_in 'Username', with: 'loginuser'
     fill_in 'Password', with: 'password123'
     click_on 'Log In'
-    expect(page).to have_content('Welcome, Login User')
-    expect(page).to have_selector(:link_or_button, 'Logout')
-    expect(page).to have_current_path('/profile')
+    expect(page).to have_current_path('/dashboard')
+    expect(page).to have_button('Logout')
   end
 
   it 'shows an error for invalid credentials' do

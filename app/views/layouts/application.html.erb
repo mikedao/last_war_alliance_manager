@@ -37,8 +37,11 @@
       <%= link_to 'Last War Alliance Manager', root_path, class: "text-3xl font-bold text-white hover:text-[var(--lw-accent)] transition" %>
       <div class="flex items-center gap-4">
         <% if logged_in? %>
+          <% if show_dashboard_link? %>
+            <%= link_to 'Dashboard', dashboard_path, class: "text-[var(--lw-text)] hover:text-[var(--lw-accent)] transition font-bold" %>
+          <% end %>
           <%= form_with url: logout_path, method: :delete, class: "inline" do %>
-            <%= submit_tag 'Logout', class: "rounded px-4 py-2 font-semibold border border-[var(--lw-accent-3)] bg-[var(--lw-accent-4)] text-[var(--lw-text)] hover:bg-[var(--lw-accent)] transition cursor-pointer" %>
+            <%= submit_tag 'Logout', class: "text-[var(--lw-text)] hover:text-[var(--lw-accent)] transition cursor-pointer bg-transparent border-none p-0 font-bold" %>
           <% end %>
         <% else %>
           <%= link_to 'Sign Up', signup_path, class: "rounded px-4 py-2 font-semibold border border-[var(--lw-accent-3)] bg-[var(--lw-accent-4)] text-[var(--lw-text)] hover:bg-[var(--lw-accent)] transition" %>
@@ -46,7 +49,7 @@
         <% end %>
       </div>
     </nav>
-    <main class="container mx-auto mt-28 px-5 flex flex-col items-center justify-center min-h-[60vh] bg-[var(--lw-bg)] text-[var(--lw-text)]">
+    <main class="container mx-auto mt-28 px-4 sm:px-6 lg:px-8">
       <%= yield %>
     </main>
   </body>

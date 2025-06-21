@@ -19,4 +19,8 @@ class User < ApplicationRecord
       "Alliance Manager"
     end
   end
+
+  def alliance_admin?
+    role == "alliance_admin"
+  end
 end

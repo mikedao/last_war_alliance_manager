@@ -116,14 +116,18 @@ RSpec.describe 'Alliance Creation', type: :feature do
     expect(page).to have_content('First Alliance')
   end
 
-  it 'redirects to profile with an alert when trying to access dashboard without an alliance' do
-    # Try to access dashboard directly
+  it 'redirects to dashboard with a message when trying to access dashboard without an alliance' do
+    user = create(:user, username: 'noalliance', display_name: 'No Alliance', email: 'noalliance@example.com', password: 'password123', password_confirmation: 'password123', role: :user)
+    # First logout to ensure clean session
+    click_on 'Logout'
+    visit root_path
+    click_on 'Login'
+    fill_in 'Username', with: 'noalliance'
+    fill_in 'Password', with: 'password123'
+    click_on 'Log In'
     visit dashboard_path
-
-    expect(page).to have_current_path('/profile')
-    expect(page).to have_content('You do not belong to an alliance.')
-    expect(page).to have_selector(:link_or_button, 'Create Alliance')
-    expect(page).to have_selector(:link_or_button, 'Join Existing Alliance')
+    expect(page).to have_current_path(dashboard_path)
+    expect(page).to have_content("You don't belong to an alliance yet.")
   end
 
   context 'when user is not logged in' do

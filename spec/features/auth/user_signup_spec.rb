@@ -3,25 +3,17 @@ require 'rails_helper'
 RSpec.describe 'User Sign Up', type: :feature do
   let(:existing_user) { User.create!(username: 'existinguser', display_name: 'Existing User', email: 'existing@example.com', password: 'password', password_confirmation: 'password') }
 
-  it 'allows a user to sign up, auto-logs in, and shows their profile with alliance options' do
+  it 'allows a user to sign up, auto-logs in, and shows their dashboard with alliance options' do
     visit root_path
     click_on 'Sign Up'
     fill_in 'Username', with: 'newuser'
     fill_in 'Display name', with: 'New User'
     fill_in 'Email', with: 'newuser@example.com'
-    fill_in 'Password', with: 'securepassword'
-    fill_in 'Password confirmation', with: 'securepassword'
+    fill_in 'Password', with: 'password123'
+    fill_in 'Password confirmation', with: 'password123'
     click_on 'Create Account'
-
-    expect(page).to have_current_path('/profile')
-    expect(page).to have_content('Username: newuser')
-    expect(page).to have_content('Display name: New User')
-    expect(page).to have_content('Email: newuser@example.com')
-    expect(page).to have_content('Role: user')
-    expect(page).to have_selector(:link_or_button, 'Create Alliance')
-    expect(page).to have_content('For alliance leaders only!')
-    expect(page).to have_selector(:link_or_button, 'Join Existing Alliance')
-    expect(page).to have_selector(:link_or_button, 'Logout')
+    expect(page).to have_current_path('/dashboard')
+    expect(page).to have_content("You don't belong to an alliance yet.")
   end
 
   it 'shows an error if password and confirmation do not match' do

@@ -1,0 +1,2 @@
+module Alliance::PlayersHelper
+end
