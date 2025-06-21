@@ -75,7 +75,14 @@ class Alliance::PlayersController < ApplicationController
       end
     end
 
-    render :bulk_results
+    cache_key = "bulk_import_results_#{current_user.id}_#{SecureRandom.uuid}"
+    Rails.cache.write(cache_key, @results, expires_in: 5.minutes)
+    redirect_to bulk_results_alliance_players_path(@alliance, cache_key: cache_key)
+  end
+
+  def bulk_results
+    @results = Rails.cache.read(params[:cache_key])
+    redirect_to alliance_players_path(@alliance), alert: "No bulk import results to display." if @results.blank?
   end
 
   def edit

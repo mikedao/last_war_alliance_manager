@@ -28,6 +28,7 @@ Rails.application.routes.draw do
       collection do
         get :bulk_add
         post :bulk_create
+        get :bulk_results
       end
     end
   end
