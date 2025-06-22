@@ -309,6 +309,8 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'allows alliance admins to edit player scores' do
+      # Wait for the player row to be present before proceeding
+      expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
       within(player_row) do
         input = first('input[type="text"]')
@@ -323,6 +325,8 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'manually triggers the save function' do
+      # Wait for the player row to be present before proceeding
+      expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
 
       within(player_row) do
@@ -342,6 +346,8 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'allows entering NA as a score' do
+      # Wait for the player row to be present before proceeding
+      expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
       within(player_row) do
         input = first('input[type="text"]')
@@ -356,6 +362,8 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'updates totals automatically when scores are saved' do
+      # Wait for the player row to be present before proceeding
+      expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
       within(player_row) do
         inputs = all('input[type="text"]')
@@ -371,6 +379,8 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'treats NA as zero in total calculations' do
+      # Wait for the player row to be present before proceeding
+      expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
       within(player_row) do
         inputs = all('input[type="text"]')
@@ -392,6 +402,8 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       # Wait for the button to show it's locked, confirming the async action
       expect(page).to have_button('Locked', wait: 5)
 
+      # Wait for the player row to be present before proceeding
+      expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       # Check that the input in player1's row for day 1 is disabled
       player_row = find("tr[data-player-id='#{player1.id}']")
       within(player_row) do
