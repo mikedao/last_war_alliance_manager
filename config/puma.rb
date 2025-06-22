@@ -28,7 +28,9 @@ threads_count = ENV.fetch("RAILS_MAX_THREADS", 3)
 threads threads_count, threads_count
 
 # Bind to all interfaces for Fly.io deployment
-bind "tcp://0.0.0.0:#{ENV.fetch('PORT', 8080)}"
+# Use PORT environment variable or default to 8080 for production
+port = ENV.fetch("PORT", Rails.env.production? ? 8080 : 3000)
+bind "tcp://0.0.0.0:#{port}"
 
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
