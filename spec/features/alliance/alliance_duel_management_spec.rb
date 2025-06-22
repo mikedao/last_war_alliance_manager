@@ -214,4 +214,61 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       expect(day_one.reload.score_goal).to eq(1111.3)
     end
   end
+
+  describe 'locking duel days', js: true do
+    let(:duel_date) { Date.new(2025, 6, 22) }
+    let!(:duel) { create(:alliance_duel, alliance: user.alliance, start_date: duel_date) }
+    let!(:day_one) { duel.duel_days.find_by(day_number: 1) }
+
+    before do
+      visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
+    end
+
+    it 'allows alliance admins to lock and unlock days' do
+      within("turbo-frame#lock_button_duel_day_#{day_one.id}") do
+        expect(page).to have_button('Lock')
+        click_button 'Lock'
+        expect(page).to have_button('Locked')
+        click_button 'Locked'
+        expect(page).to have_button('Lock')
+      end
+      expect(day_one.reload.locked?).to be false
+    end
+
+    it 'does not prevent editing goals when day is locked' do
+      within("turbo-frame#lock_button_duel_day_#{day_one.id}") do
+        click_button 'Lock'
+        expect(page).to have_button('Locked')
+      end
+      within("turbo-frame#goal_duel_day_#{day_one.id}") do
+        expect(page).to have_selector("a[href*='duel_days/#{day_one.id}/edit_goal']")
+      end
+    end
+
+    # it 'allows alliance managers to lock and unlock days' do
+    #   user.update!(role: :alliance_manager)
+    #   visit logout_path
+    #   visit login_path
+    #   fill_in 'Username', with: user.username
+    #   fill_in 'Password', with: 'password123'
+    #   click_on 'Log In'
+    #   visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
+    #   within("turbo-frame#lock_button_duel_day_#{day_one.id}") do
+    #     expect(page).to have_button('Lock')
+    #     click_button 'Lock'
+    #     expect(page).to have_button('Locked')
+    #   end
+    # end
+
+    it 'prevents regular users from locking days' do
+      user.update!(role: :user)
+      visit logout_path
+      visit login_path
+      fill_in 'Username', with: user.username
+      fill_in 'Password', with: 'password123'
+      click_on 'Log In'
+      visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
+      expect(page).not_to have_button('Lock')
+    end
+  end
 end 

@@ -16,7 +16,7 @@
                 <%= turbo_frame_tag dom_id(day, :goal) do %>
                   <%= render 'alliance/duel_days/duel_day_goal', duel_day: day %>
                 <% end %>
-                <!-- Lock Button will go here -->
+                <%= render 'alliance/duel_days/lock_button', duel_day: day %>
               </div>
             </th>
           <% end %>

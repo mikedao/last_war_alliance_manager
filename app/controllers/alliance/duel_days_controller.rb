@@ -2,7 +2,7 @@ class Alliance::DuelDaysController < ApplicationController
   include ActionView::RecordIdentifier
 
   before_action :require_login
-  before_action :require_alliance_admin
+  before_action :require_alliance_admin_or_manager
   before_action :set_alliance
   before_action :set_alliance_duel
   before_action :set_duel_day
@@ -33,14 +33,29 @@ class Alliance::DuelDaysController < ApplicationController
     # This will implicitly render app/views/alliance/duel_days/cancel_edit_goal.html.erb
   end
 
+  def toggle_lock
+    @duel_day.update!(locked: !@duel_day.locked)
+    
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          dom_id(@duel_day, :lock_button),
+          partial: 'alliance/duel_days/lock_button',
+          locals: { duel_day: @duel_day }
+        )
+      end
+      format.html { redirect_to alliance_duel_path(alliance_duel_start_date: @alliance_duel.start_date) }
+    end
+  end
+
   private
 
   def set_alliance
     @alliance = current_user.alliance
   end
   
-  def require_alliance_admin
-    unless current_user.alliance_admin?
+  def require_alliance_admin_or_manager
+    unless current_user.alliance_admin? || current_user.alliance_manager?
       redirect_to dashboard_path, alert: 'You are not authorized to perform this action.'
     end
   end

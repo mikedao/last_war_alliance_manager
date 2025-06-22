@@ -51,6 +51,7 @@ Rails.application.routes.draw do
         member do
           get :edit_goal
           get :cancel_edit_goal
+          patch :toggle_lock
         end
       end
     end
