@@ -25,3 +25,7 @@ console_command = '/rails/bin/rails console'
   cpu_kind = 'shared'
   cpus = 1
   memory_mb = 1024
+
+[mounts]
+  source="last_war_alliance_manager"
+  destination="/mnt/last_war_alliance_manager
