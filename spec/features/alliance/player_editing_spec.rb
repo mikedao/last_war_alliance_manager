@@ -28,7 +28,6 @@ RSpec.feature 'Player Editing', type: :feature do
       expect(page).to have_select('Rank', selected: 'R3')
       expect(page).to have_field('Level', with: '75')
       expect(page).to have_field('Notes', with: 'Original notes')
-      expect(page).to have_checked_field('Active')
     end
 
     it 'allows alliance admin to update player information' do
@@ -38,7 +37,6 @@ RSpec.feature 'Player Editing', type: :feature do
       select 'R4', from: 'Rank'
       fill_in 'Level', with: '85'
       fill_in 'Notes', with: 'Updated notes'
-      uncheck 'Active'
       
       click_on 'Update Player'
       
@@ -50,7 +48,6 @@ RSpec.feature 'Player Editing', type: :feature do
       expect(page).to have_content('R4')
       expect(page).to have_content('85')
       expect(page).to have_content('Updated notes')
-      expect(page).to have_content('Inactive')
     end
 
     it 'shows validation errors for invalid data' do
