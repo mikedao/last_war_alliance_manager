@@ -255,7 +255,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     it 'allows alliance admins to lock and unlock days' do
       # Wait for the lock button frame to be present
       expect(page).to have_selector("turbo-frame#lock_button_duel_day_#{day_one.id}", wait: 10)
-      
+
       within("turbo-frame#lock_button_duel_day_#{day_one.id}") do
         expect(page).to have_button('Lock')
         click_button 'Lock'
@@ -333,7 +333,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       # Wait for the page to fully load and ensure players are present
       expect(page).to have_content('PlayerOneUnique', wait: 10)
       expect(page).to have_content('PlayerTwoUnique', wait: 10)
-      
+
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
@@ -353,7 +353,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       # Wait for the page to fully load and ensure players are present
       expect(page).to have_content('PlayerOneUnique', wait: 10)
       expect(page).to have_content('PlayerTwoUnique', wait: 10)
-      
+
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
@@ -379,7 +379,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       # Wait for the page to fully load and ensure players are present
       expect(page).to have_content('PlayerOneUnique', wait: 10)
       expect(page).to have_content('PlayerTwoUnique', wait: 10)
-      
+
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
@@ -400,7 +400,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       # Wait for the page to fully load and ensure players are present
       expect(page).to have_content('PlayerOneUnique', wait: 10)
       expect(page).to have_content('PlayerTwoUnique', wait: 10)
-      
+
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
@@ -422,7 +422,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       # Wait for the page to fully load and ensure players are present
       expect(page).to have_content('PlayerOneUnique', wait: 10)
       expect(page).to have_content('PlayerTwoUnique', wait: 10)
-      
+
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
@@ -444,7 +444,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       # Wait for the page to fully load and ensure players are present
       expect(page).to have_content('PlayerOneUnique', wait: 10)
       expect(page).to have_content('PlayerTwoUnique', wait: 10)
-      
+
       # Find and click the first lock button (day one)
       expect(page).to have_selector("turbo-frame#lock_button_duel_day_#{day_one.id}", wait: 10)
       within("turbo-frame#lock_button_duel_day_#{day_one.id}") do
