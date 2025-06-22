@@ -17,7 +17,7 @@ class Alliance::DuelDaysController < ApplicationController
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(
             dom_id(@duel_day, :goal),
-            partial: 'alliance/duel_days/duel_day_goal',
+            partial: "alliance/duel_days/duel_day_goal",
             locals: { duel_day: @duel_day }
           )
         end
@@ -35,31 +35,31 @@ class Alliance::DuelDaysController < ApplicationController
 
   def toggle_lock
     @duel_day.update!(locked: !@duel_day.locked)
-    
+
     respond_to do |format|
       format.turbo_stream do
         # Update the lock button
         lock_button_stream = turbo_stream.replace(
           dom_id(@duel_day, :lock_button),
-          partial: 'alliance/duel_days/lock_button',
+          partial: "alliance/duel_days/lock_button",
           locals: { duel_day: @duel_day }
         )
-        
+
         # Update all input fields for this day
         input_streams = @alliance_duel.alliance.players.map do |player|
           turbo_stream.replace(
             dom_id(@duel_day, "player_#{player.id}_score"),
-            partial: 'alliance/alliance_duels/score_input',
-            locals: { 
-              player: player, 
-              day: @duel_day, 
-              day_index: @duel_day.day_number - 1, 
-              players: @alliance_duel.alliance.players 
+            partial: "alliance/alliance_duels/score_input",
+            locals: {
+              player: player,
+              day: @duel_day,
+              day_index: @duel_day.day_number - 1,
+              players: @alliance_duel.alliance.players
             }
           )
         end
-        
-        render turbo_stream: [lock_button_stream] + input_streams
+
+        render turbo_stream: [ lock_button_stream ] + input_streams
       end
       format.html { redirect_to alliance_duel_path(alliance_duel_start_date: @alliance_duel.start_date) }
     end
@@ -70,10 +70,10 @@ class Alliance::DuelDaysController < ApplicationController
   def set_alliance
     @alliance = current_user.alliance
   end
-  
+
   def require_alliance_admin_or_manager
     unless current_user.alliance_admin? || current_user.alliance_manager?
-      redirect_to dashboard_path, alert: 'You are not authorized to perform this action.'
+      redirect_to dashboard_path, alert: "You are not authorized to perform this action."
     end
   end
 
@@ -88,4 +88,4 @@ class Alliance::DuelDaysController < ApplicationController
   def duel_day_params
     params.require(:duel_day).permit(:score_goal)
   end
-end 
+end

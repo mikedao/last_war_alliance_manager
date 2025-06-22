@@ -23,4 +23,4 @@ RSpec.describe Alliance, type: :model do
     it { should_not allow_value('abc').for(:server).with_message('is invalid') }
     it { should_not allow_value('123456').for(:server).with_message('is invalid') }
   end
-end 
+end

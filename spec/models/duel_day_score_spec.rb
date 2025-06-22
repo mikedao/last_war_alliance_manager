@@ -9,4 +9,4 @@ RSpec.describe DuelDayScore, type: :model do
     it { should belong_to(:duel_day) }
     it { should belong_to(:player) }
   end
-end 
+end

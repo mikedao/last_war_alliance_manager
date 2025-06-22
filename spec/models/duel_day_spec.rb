@@ -10,4 +10,4 @@ RSpec.describe DuelDay, type: :model do
   describe 'associations' do
     it { should belong_to(:alliance_duel) }
   end
-end 
+end

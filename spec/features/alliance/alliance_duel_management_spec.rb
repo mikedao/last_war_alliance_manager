@@ -69,7 +69,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
 
       expect(page).to have_current_path(alliance_duels_path)
       expect(page).to have_content("Duel created successfully.")
-      
+
       within('table') do
         expect(page).to have_selector('td', text: Date.today.strftime('%A, %B %d, %Y'))
       end
@@ -82,15 +82,15 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
 
       expect(page).to have_current_path(alliance_duels_path)
       expect(page).to have_content("Duel created successfully.")
-      
+
       # Verify the duel was created
       duel = AllianceDuel.last
       expect(duel.alliance).to eq(user.alliance)
       expect(duel.start_date).to eq(Date.today)
-      
+
       # Verify six duel days were created with correct titles
       expect(duel.duel_days.count).to eq(6)
-      
+
       expected_days = [
         { day_number: 1, name: 'Radar Training' },
         { day_number: 2, name: 'Base Expansion' },
@@ -99,7 +99,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
         { day_number: 5, name: 'Total Mobilization' },
         { day_number: 6, name: 'Enemy Buster' }
       ]
-      
+
       expected_days.each do |expected_day|
         day = duel.duel_days.find_by(day_number: expected_day[:day_number])
         expect(day).to be_present
@@ -144,7 +144,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
 
       click_link 'View Details'
 
-      expect(page).to have_current_path("/dashboard/alliance_duels/#{duel_date.to_s}")
+      expect(page).to have_current_path("/dashboard/alliance_duels/#{duel_date}")
       expect(page).to have_content("Alliance Duel: #{duel_date.strftime('%Y-%m-%d')}")
     end
 
@@ -262,7 +262,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       lock_button.click
       # Wait for the button to show it's locked, confirming the async action
       expect(page).to have_button('Locked', wait: 5)
-      
+
       # Check that the edit goal link is still available
       within("turbo-frame#goal_duel_day_#{day_one.id}") do
         expect(page).to have_selector("a[href*='duel_days/#{day_one.id}/edit_goal']")
@@ -324,17 +324,17 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
 
     it 'manually triggers the save function' do
       player_row = find("tr[data-player-id='#{player1.id}']")
-      
+
       within(player_row) do
         input = first('input[type="text"]')
         input.set('3.5')
-        
+
         # Manually trigger the save function
         page.execute_script("saveScore(arguments[0])", input.native)
-        
+
         sleep 2
       end
-      
+
       # Check the database
       score = DuelDayScore.find_by(player: player1, duel_day: day_one)
       expect(score).to be_present
@@ -412,4 +412,4 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       expect(page).not_to have_selector("input[type='text']")
     end
   end
-end 
+end

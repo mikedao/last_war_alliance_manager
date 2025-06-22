@@ -14,7 +14,7 @@ class Alliance::AllianceDuelsController < ApplicationController
   def create
     @alliance_duel = @alliance.alliance_duels.new(alliance_duel_params)
     if @alliance_duel.save
-      redirect_to alliance_duels_path, notice: 'Duel created successfully.'
+      redirect_to alliance_duels_path, notice: "Duel created successfully."
     else
       render :new, status: :unprocessable_entity
     end
@@ -31,7 +31,7 @@ class Alliance::AllianceDuelsController < ApplicationController
           turbo_stream.update("flash", partial: "shared/flash", locals: { message: "Duel deleted successfully.", type: "notice" })
         ]
       end
-      format.html { redirect_to alliance_duels_path, notice: 'Duel deleted successfully.' }
+      format.html { redirect_to alliance_duels_path, notice: "Duel deleted successfully." }
     end
   end
 
@@ -39,7 +39,7 @@ class Alliance::AllianceDuelsController < ApplicationController
     @alliance_duel = @alliance.alliance_duels.includes(:duel_days).find_by(start_date: params[:alliance_duel_start_date])
 
     if @alliance_duel.nil?
-      redirect_to alliance_duels_path, alert: 'Duel not found.'
+      redirect_to alliance_duels_path, alert: "Duel not found."
       return
     end
 
@@ -49,26 +49,26 @@ class Alliance::AllianceDuelsController < ApplicationController
 
   def update_score
     @alliance_duel = @alliance.alliance_duels.find_by(start_date: params[:alliance_duel_start_date])
-    
+
     if @alliance_duel.nil?
-      render json: { success: false, error: 'Duel not found' }, status: :not_found
+      render json: { success: false, error: "Duel not found" }, status: :not_found
       return
     end
 
     player = @alliance.players.find(params[:player_id])
     duel_day = @alliance_duel.duel_days.find(params[:duel_day_id])
-    
+
     # Check if day is locked
     if duel_day.locked?
-      render json: { success: false, error: 'Day is locked' }, status: :unprocessable_entity
+      render json: { success: false, error: "Day is locked" }, status: :unprocessable_entity
       return
     end
 
     # Find or create the score record
     score = DuelDayScore.find_or_initialize_by(player: player, duel_day: duel_day)
-    
+
     # Handle the score value
-    if params[:score].blank? || params[:score] == 'NA'
+    if params[:score].blank? || params[:score] == "NA"
       score.score = nil
     else
       score.score = params[:score].to_f
@@ -77,14 +77,14 @@ class Alliance::AllianceDuelsController < ApplicationController
     if score.save
       # Calculate new total
       total = calculate_player_total(player, @alliance_duel.duel_days)
-      
-      render json: { 
-        success: true, 
+
+      render json: {
+        success: true,
         total: total,
-        score: score.score.nil? ? 'NA' : score.score
+        score: score.score.nil? ? "NA" : score.score
       }
     else
-      render json: { success: false, error: 'Failed to save score' }, status: :unprocessable_entity
+      render json: { success: false, error: "Failed to save score" }, status: :unprocessable_entity
     end
   end
 
@@ -96,7 +96,7 @@ class Alliance::AllianceDuelsController < ApplicationController
 
   def require_alliance_admin
     unless current_user.alliance_admin?
-      redirect_to dashboard_path, alert: 'You are not authorized to perform this action.'
+      redirect_to dashboard_path, alert: "You are not authorized to perform this action."
     end
   end
 
@@ -114,4 +114,4 @@ class Alliance::AllianceDuelsController < ApplicationController
     end
     total.round(1)
   end
-end 
+end

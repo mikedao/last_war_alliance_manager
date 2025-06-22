@@ -3,4 +3,4 @@ FactoryBot.define do
     association :alliance
     start_date { Date.today }
   end
-end 
+end

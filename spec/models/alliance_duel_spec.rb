@@ -8,4 +8,4 @@ RSpec.describe AllianceDuel, type: :model do
   describe 'associations' do
     it { should belong_to(:alliance) }
   end
-end 
+end
