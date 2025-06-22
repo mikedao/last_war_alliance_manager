@@ -10,5 +10,4 @@ FactoryBot.define do
       locked { true }
     end
   end
-end 
- 
+end

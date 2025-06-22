@@ -5,10 +5,10 @@ RSpec.feature 'Public Leaderboard', type: :feature do
     it 'successfully displays the leaderboard for a valid alliance tag' do
       # Setup
       alliance = create(:alliance, tag: 'TEST')
-      
+
       # Action
       visit '/TEST'
-      
+
       # Assertion
       expect(page).to have_content("Leaderboard for #{alliance.name}")
       expect(page).to have_content('Top Daily Performers')
@@ -17,7 +17,7 @@ RSpec.feature 'Public Leaderboard', type: :feature do
     it 'shows a not found page for an invalid 4-character tag' do
       # Action
       visit '/XXXX'
-      
+
       # Assertion
       expect(page).to have_content("Alliance not found")
       expect(page.status_code).to eq(404)
@@ -26,7 +26,7 @@ RSpec.feature 'Public Leaderboard', type: :feature do
     it 'does not match the route for a tag that is not 4 characters' do
       # Action
       visit '/INVALID'
-      
+
       # Assertion
       expect(page).to have_content("Routing Error")
       expect(page).not_to have_content("Alliance not found")
@@ -47,7 +47,7 @@ RSpec.feature 'Public Leaderboard', type: :feature do
       recent_duel = create(:alliance_duel, alliance: alliance, start_date: 1.day.ago)
       day1 = create(:duel_day, alliance_duel: recent_duel, day_number: 1, name: 'Day One')
       day2 = create(:duel_day, :locked, alliance_duel: recent_duel, day_number: 2, name: 'Day Two') # This is the target
-      
+
       # Setup: Scores for the correct day
       create(:duel_day_score, player: active_player, duel_day: day2, score: 100)
 
@@ -164,5 +164,172 @@ RSpec.feature 'Public Leaderboard', type: :feature do
       expect(page).to have_content('Leaderboard for Test Alliance')
     end
   end
-end 
- 
+
+  describe 'Top Weekly Performers section' do
+    let!(:alliance) { create(:alliance, tag: 'TEST') }
+    let!(:active_player1) { create(:player, alliance: alliance, username: 'PlayerOne', rank: 'R1', level: 10) }
+    let!(:active_player2) { create(:player, alliance: alliance, username: 'PlayerTwo', rank: 'R2', level: 20) }
+    let!(:inactive_player) { create(:player, :inactive, alliance: alliance, username: 'InactivePlayer') }
+
+    it 'displays the top 10 performers by total points for all locked days in the most recent duel' do
+      duel = create(:alliance_duel, alliance: alliance, start_date: 1.day.ago)
+      day1 = create(:duel_day, :locked, alliance_duel: duel, day_number: 1, name: 'Day 1')
+      day2 = create(:duel_day, :locked, alliance_duel: duel, day_number: 2, name: 'Day 2')
+      day3 = create(:duel_day, alliance_duel: duel, day_number: 3, name: 'Day 3') # not locked
+
+      # PlayerOne: 100 + 200 = 300
+      create(:duel_day_score, player: active_player1, duel_day: day1, score: 100)
+      create(:duel_day_score, player: active_player1, duel_day: day2, score: 200)
+      # PlayerTwo: 150 + 50 = 200
+      create(:duel_day_score, player: active_player2, duel_day: day1, score: 150)
+      create(:duel_day_score, player: active_player2, duel_day: day2, score: 50)
+      # Inactive player: should not appear
+      create(:duel_day_score, player: inactive_player, duel_day: day1, score: 999)
+
+      visit '/TEST'
+
+      expect(page).to have_content('Top Weekly Performers')
+      within('.top-weekly-performers') do
+        expect(page).to have_content('PlayerOne')
+        expect(page).to have_content('PlayerTwo')
+        expect(page).to have_content('300')
+        expect(page).to have_content('200')
+        expect(page).to have_content('R1')
+        expect(page).to have_content('R2')
+        expect(page).to have_content('10')
+        expect(page).to have_content('20')
+        # PlayerOne should be ranked above PlayerTwo
+        expect(page.body.index('PlayerOne')).to be < page.body.index('PlayerTwo')
+      end
+    end
+
+    it 'shows a message if no days are locked in the most recent duel' do
+      duel = create(:alliance_duel, alliance: alliance, start_date: 1.day.ago)
+      create(:duel_day, alliance_duel: duel, day_number: 1, name: 'Day 1') # not locked
+
+      visit '/TEST'
+      within('.top-weekly-performers') do
+        expect(page).to have_content('No data to display until a day is locked')
+      end
+    end
+  end
+
+  describe 'Players Below Daily Goal section' do
+    let!(:alliance) { create(:alliance, tag: 'TEST') }
+    let!(:active_player1) { create(:player, alliance: alliance, username: 'PlayerOne', rank: 'R1', level: 10) }
+    let!(:active_player2) { create(:player, alliance: alliance, username: 'PlayerTwo', rank: 'R2', level: 20) }
+    let!(:active_player3) { create(:player, alliance: alliance, username: 'PlayerThree', rank: 'R3', level: 30) }
+    let!(:inactive_player) { create(:player, :inactive, alliance: alliance, username: 'InactivePlayer') }
+
+    it 'displays players who did not meet the goal for the latest locked day' do
+      duel = create(:alliance_duel, alliance: alliance, start_date: 1.day.ago)
+      day1 = create(:duel_day, alliance_duel: duel, day_number: 1, name: 'Day 1')
+      day2 = create(:duel_day, :locked, alliance_duel: duel, day_number: 2, name: 'Day 2', score_goal: 100) # This is the target
+
+      # PlayerOne: Made goal (120 >= 100) - should NOT appear
+      create(:duel_day_score, player: active_player1, duel_day: day2, score: 120)
+      # PlayerTwo: Below goal (80 < 100) - should appear
+      create(:duel_day_score, player: active_player2, duel_day: day2, score: 80)
+      # PlayerThree: Below goal (50 < 100) - should appear
+      create(:duel_day_score, player: active_player3, duel_day: day2, score: 50)
+      # Inactive player: Below goal but inactive - should NOT appear
+      create(:duel_day_score, player: inactive_player, duel_day: day2, score: 30)
+
+      visit '/TEST'
+
+      expect(page).to have_content('Players Below Daily Goal')
+      within('.players-below-goal') do
+        expect(page).to have_content('PlayerTwo')
+        expect(page).to have_content('PlayerThree')
+        expect(page).not_to have_content('PlayerOne')
+        expect(page).not_to have_content('InactivePlayer')
+        expect(page).to have_content('80')
+        expect(page).to have_content('50')
+        expect(page).to have_content('R2')
+        expect(page).to have_content('R3')
+        expect(page).to have_content('20')
+        expect(page).to have_content('30')
+      end
+    end
+
+    it 'shows a message if no days are locked in the most recent duel' do
+      duel = create(:alliance_duel, alliance: alliance, start_date: 1.day.ago)
+      create(:duel_day, alliance_duel: duel, day_number: 1, name: 'Day 1') # not locked
+
+      visit '/TEST'
+      within('.players-below-goal') do
+        expect(page).to have_content('No data to display until a day is locked')
+      end
+    end
+
+    it 'shows a message if all players made the goal' do
+      duel = create(:alliance_duel, alliance: alliance, start_date: 1.day.ago)
+      locked_day = create(:duel_day, :locked, alliance_duel: duel, day_number: 1, name: 'Day 1', score_goal: 50)
+
+      # All players made the goal
+      create(:duel_day_score, player: active_player1, duel_day: locked_day, score: 100)
+      create(:duel_day_score, player: active_player2, duel_day: locked_day, score: 75)
+
+      visit '/TEST'
+      within('.players-below-goal') do
+        expect(page).to have_content('No players below the daily goal')
+      end
+    end
+  end
+
+  describe "Becky's Naughty List section" do
+    let!(:alliance) { create(:alliance, tag: 'TEST') }
+    let!(:duel) { create(:alliance_duel, alliance: alliance, start_date: 1.day.ago) }
+
+    it "displays players who have missed their goal on 3 or more locked days" do
+      # --- Setup Days ---
+      # Day 1 goal: 50, Day 2 goal: 100, Day 3 goal: 150
+      day1 = create(:duel_day, :locked, alliance_duel: duel, score_goal: 50)
+      day2 = create(:duel_day, :locked, alliance_duel: duel, score_goal: 100)
+      day3 = create(:duel_day, :locked, alliance_duel: duel, score_goal: 150)
+      create(:duel_day, alliance_duel: duel, score_goal: 200) # Not locked
+
+      # --- Setup Players ---
+      naughty_player = create(:player, alliance: alliance, username: 'NaughtyPlayer') # Missed 3 days
+      nice_player = create(:player, alliance: alliance, username: 'NicePlayer')       # Missed 2 days
+      inactive_player = create(:player, :inactive, alliance: alliance, username: 'InactiveNaughty') # Missed 3 days, but inactive
+
+      # --- Naughty Player Scores (missed all 3) ---
+      create(:duel_day_score, player: naughty_player, duel_day: day1, score: 40)  # Miss
+      create(:duel_day_score, player: naughty_player, duel_day: day2, score: 90)  # Miss
+      create(:duel_day_score, player: naughty_player, duel_day: day3, score: 140) # Miss
+
+      # --- Nice Player Scores (missed 2) ---
+      create(:duel_day_score, player: nice_player, duel_day: day1, score: 60)  # Made
+      create(:duel_day_score, player: nice_player, duel_day: day2, score: 90)  # Miss
+      create(:duel_day_score, player: nice_player, duel_day: day3, score: 140) # Miss
+
+      # --- Inactive Player Scores (missed 3) ---
+      create(:duel_day_score, player: inactive_player, duel_day: day1, score: 10)
+      create(:duel_day_score, player: inactive_player, duel_day: day2, score: 10)
+      create(:duel_day_score, player: inactive_player, duel_day: day3, score: 10)
+
+      visit '/TEST'
+
+      within('.beckys-naughty-list') do
+        expect(page).to have_content("Becky's Naughty List")
+
+        # Check table content
+        expect(page).to have_content('NaughtyPlayer')
+        expect(page).to have_content('3') # Days Missed
+        expect(page).to have_content('100.0%') # Missed Goal %
+        expect(page).not_to have_content('NicePlayer')
+        expect(page).not_to have_content('InactiveNaughty')
+      end
+    end
+
+    it 'shows a message if no players are on the naughty list' do
+      create(:duel_day, :locked, alliance_duel: duel, score_goal: 100)
+      visit '/TEST'
+
+      within('.beckys-naughty-list') do
+        expect(page).to have_content("Everyone has been good! The naughty list is empty.")
+      end
+    end
+  end
+end

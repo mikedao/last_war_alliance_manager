@@ -2,7 +2,7 @@
   <div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl px-6 sm:px-10 py-8 sm:py-12 max-w-5xl w-full mx-4">
     <h1 class="font-bold text-3xl mb-6 text-[var(--lw-accent-2)] text-center">Leaderboard for <%= @alliance.name %></h1>
 
-    <section class="mb-8">
+    <section class="mb-16">
       <h2 class="text-xl font-semibold mb-4 text-[var(--lw-accent-2)] text-center">Top Daily Performers</h2>
       
       <% if @latest_locked_day %>
@@ -26,10 +26,237 @@
           </div>
         </div>
 
-        <%# Player ranking table will go here %>
+        <%# Player ranking table %>
+        <div class="bg-[var(--lw-accent-4)] border border-[var(--lw-accent-3)] rounded-lg overflow-hidden">
+          <div class="px-6 py-4 border-b border-[var(--lw-accent-3)]">
+            <h3 class="text-lg font-semibold text-[var(--lw-accent-2)]">Top 10 Performers</h3>
+          </div>
+          
+          <% if top_performers.any? %>
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-[var(--lw-accent-3)]">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Rank</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Player</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Alliance Rank</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Level</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Points</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--lw-accent-3)]">
+                  <% top_performers.each_with_index do |score, index| %>
+                    <tr class="hover:bg-[var(--lw-accent-3)] transition-colors">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm font-medium text-[var(--lw-text)]">
+                          <% case index %>
+                          <% when 0 %>
+                            🥇 1st
+                          <% when 1 %>
+                            🥈 2nd
+                          <% when 2 %>
+                            🥉 3rd
+                          <% else %>
+                            #<%= index + 1 %>
+                          <% end %>
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm font-medium text-[var(--lw-text)]"><%= score.player.username %></span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm text-[var(--lw-muted)]"><%= score.player.rank %></span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm text-[var(--lw-muted)]"><%= score.player.level %></span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm font-bold text-[var(--lw-accent-2)]"><%= number_with_precision(score.score, precision: 1) %></span>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <div class="px-6 py-8 text-center text-[var(--lw-muted)]">
+              No scores recorded for this day yet
+            </div>
+          <% end %>
+        </div>
       <% else %>
         <div class="text-center text-[var(--lw-muted)] p-8 border-2 border-dashed border-[var(--lw-accent-3)] rounded-lg">
           No data to display until a day is locked
+        </div>
+      <% end %>
+    </section>
+
+    <!-- Top Weekly Performers Section -->
+    <section class="mt-12 mb-16 top-weekly-performers">
+      <h2 class="text-xl font-semibold mb-4 text-[var(--lw-accent-2)] text-center">Top Weekly Performers</h2>
+      <% if top_weekly_performers.any? %>
+        <div class="bg-[var(--lw-accent-4)] border border-[var(--lw-accent-3)] rounded-lg overflow-hidden">
+          <div class="px-6 py-4 border-b border-[var(--lw-accent-3)]">
+            <h3 class="text-lg font-semibold text-[var(--lw-accent-2)]">Top 10 Performers (Week)</h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-[var(--lw-accent-3)]">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Rank</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Player</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Alliance Rank</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Level</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Points</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[var(--lw-accent-3)]">
+                <% top_weekly_performers.each_with_index do |player, index| %>
+                  <tr class="hover:bg-[var(--lw-accent-3)] transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="text-sm font-medium text-[var(--lw-text)]">
+                        <% case index %>
+                        <% when 0 %>
+                          🥇 1st
+                        <% when 1 %>
+                          🥈 2nd
+                        <% when 2 %>
+                          🥉 3rd
+                        <% else %>
+                          #<%= index + 1 %>
+                        <% end %>
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="text-sm font-medium text-[var(--lw-text)]"><%= player.username %></span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="text-sm text-[var(--lw-muted)]"><%= player.rank %></span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="text-sm text-[var(--lw-muted)]"><%= player.level %></span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="text-sm font-bold text-[var(--lw-accent-2)]"><%= number_with_precision(player.total_score, precision: 1) %></span>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <% else %>
+        <div class="text-center text-[var(--lw-muted)] p-8 border-2 border-dashed border-[var(--lw-accent-3)] rounded-lg">
+          No data to display until a day is locked
+        </div>
+      <% end %>
+    </section>
+
+    <!-- Players Below Daily Goal Section -->
+    <section class="mt-12 mb-16 players-below-goal">
+      <h2 class="text-xl font-semibold mb-4 text-[var(--lw-accent-2)] text-center">Players Below Daily Goal</h2>
+      <% if @latest_locked_day %>
+        <% if players_below_goal.any? %>
+          <div class="bg-[var(--lw-accent-4)] border border-[var(--lw-accent-3)] rounded-lg overflow-hidden">
+            <div class="px-6 py-4 border-b border-[var(--lw-accent-3)]">
+              <h3 class="text-lg font-semibold text-[var(--lw-accent-2)]">Players Below Goal (<%= number_with_precision(@latest_locked_day.score_goal, precision: 1) %>)</h3>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-[var(--lw-accent-3)]">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Player</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Alliance Rank</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Level</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Score</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-[var(--lw-muted)] uppercase tracking-wider">Short By</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--lw-accent-3)]">
+                  <% players_below_goal.each do |score| %>
+                    <tr class="hover:bg-[var(--lw-accent-3)] transition-colors">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm font-medium text-[var(--lw-text)]"><%= score.player.username %></span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm text-[var(--lw-muted)]"><%= score.player.rank %></span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm text-[var(--lw-muted)]"><%= score.player.level %></span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm font-bold text-[var(--lw-accent-2)]"><%= number_with_precision(score.score, precision: 1) %></span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm text-red-400"><%= number_with_precision(@latest_locked_day.score_goal - score.score, precision: 1) %></span>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <% else %>
+          <div class="text-center text-[var(--lw-muted)] p-8 border-2 border-dashed border-[var(--lw-accent-3)] rounded-lg">
+            No players below the daily goal
+          </div>
+        <% end %>
+      <% else %>
+        <div class="text-center text-[var(--lw-muted)] p-8 border-2 border-dashed border-[var(--lw-accent-3)] rounded-lg">
+          No data to display until a day is locked
+        </div>
+      <% end %>
+    </section>
+
+    <!-- Becky's Naughty List Section -->
+    <section class="mt-16 beckys-naughty-list">
+      <h2 class="text-3xl font-bold mb-6 text-red-400 text-center">Becky's Naughty List</h2>
+      <% if @duel %>
+        <% if naughty_list.any? %>
+          <div class="bg-[var(--lw-accent-4)] border border-[var(--lw-accent-3)] rounded-lg overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-[var(--lw-accent-3)]">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-red-400 uppercase tracking-wider">Player</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-red-400 uppercase tracking-wider">Alliance Rank</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-red-400 uppercase tracking-wider">Level</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-red-400 uppercase tracking-wider">Days Missed</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-red-400 uppercase tracking-wider">Missed Goal %</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--lw-accent-3)]">
+                  <% naughty_list.each do |player| %>
+                    <tr class="hover:bg-[var(--lw-accent-3)] transition-colors">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm font-medium text-[var(--lw-text)]"><%= player.username %></span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm text-[var(--lw-muted)]"><%= player.rank %></span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm text-[var(--lw-muted)]"><%= player.level %></span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm font-bold text-red-400"><%= player.missed_days_count %></span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm font-bold text-red-400"><%= number_with_precision(player.missed_percentage, precision: 1) %>%</span>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <% else %>
+          <div class="text-center text-[var(--lw-muted)] p-8 border-2 border-dashed border-[var(--lw-accent-3)] rounded-lg">
+            Everyone has been good! The naughty list is empty.
+          </div>
+        <% end %>
+      <% else %>
+        <div class="text-center text-[var(--lw-muted)] p-8 border-2 border-dashed border-[var(--lw-accent-3)] rounded-lg">
+          No duel data available.
         </div>
       <% end %>
     </section>

@@ -4,4 +4,4 @@ FactoryBot.define do
     association :player
     score { 10.5 }
   end
-end 
+end

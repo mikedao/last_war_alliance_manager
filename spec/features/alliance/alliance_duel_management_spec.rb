@@ -256,7 +256,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     it 'does not prevent editing goals when day is locked' do
       # Wait for the goal frame to be present first
       expect(page).to have_selector("turbo-frame#goal_duel_day_#{day_one.id}", wait: 10)
-      
+
       # Find and click the first lock button (day one)
       lock_button = first('button', text: 'Lock')
       lock_button.click
@@ -400,10 +400,12 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
 
     it 'disables score fields when day is locked' do
       # Find and click the first lock button (day one)
-      lock_button = first('button', text: 'Lock')
-      lock_button.click
-      # Wait for the button to show it's locked, confirming the async action
-      expect(page).to have_button('Locked', wait: 5)
+      within("turbo-frame#lock_button_duel_day_#{day_one.id}") do
+        lock_button = find('button', text: 'Lock')
+        lock_button.click
+        # Wait for the button to show it's locked, confirming the async action
+        expect(page).to have_button('Locked', wait: 5)
+      end
 
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
@@ -428,4 +430,3 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
   end
 end
- 

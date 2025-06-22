@@ -18,7 +18,7 @@ Rails.application.routes.draw do
   delete "logout", to: "sessions#destroy", as: :logout
   resources :users, only: [ :create ]
 
-  get '/:alliance_tag', to: 'leaderboards#show', as: :public_leaderboard, constraints: { alliance_tag: /[a-zA-Z0-9]{4}/ }
+  get "/:alliance_tag", to: "leaderboards#show", as: :public_leaderboard, constraints: { alliance_tag: /[a-zA-Z0-9]{4}/ }
 
   get "profile", to: "users#show", as: :profile
 
