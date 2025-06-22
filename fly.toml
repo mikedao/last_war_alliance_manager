@@ -9,6 +9,9 @@ console_command = '/rails/bin/rails console'
 
 [build]
 
+[env]
+  PORT = "8080"
+
 [http_service]
   internal_port = 8080
   force_https = true
@@ -22,3 +25,7 @@ console_command = '/rails/bin/rails console'
   cpu_kind = 'shared'
   cpus = 1
   memory_mb = 1024
+
+[mounts]
+  source="last_war_alliance_manager"
+  destination="/mnt/last_war_alliance_manager"

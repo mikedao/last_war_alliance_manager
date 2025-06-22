@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+# Log the port being used
+port = ENV.fetch("PORT", "8080")
+puts "Starting Rails server on port #{port}"
+puts "Environment: #{ENV.fetch('RAILS_ENV', 'development')}"
+puts "Binding to: 0.0.0.0:#{port}"
+
+# Start the Rails server
+exec("./bin/rails", "server", "-b", "0.0.0.0", "-p", port.to_s) 
