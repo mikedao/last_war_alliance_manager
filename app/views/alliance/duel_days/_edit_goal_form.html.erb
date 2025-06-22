@@ -1,0 +1,32 @@
+<%= form_with(model: duel_day, url: alliance_duel_duel_day_path(alliance_duel_start_date: duel_day.alliance_duel.start_date, id: duel_day.id), method: :patch) do |form| %>
+  <%= form.hidden_field :score_goal, id: "score_goal_#{duel_day.id}" %>
+  <div class="flex items-center justify-center gap-2 mb-2">
+    <button type="button" onclick="decrementGoal(<%= duel_day.id %>)" class="w-8 h-8 text-lg font-bold text-white bg-red-600 rounded hover:bg-red-700 transition">-</button>
+    <div id="goal_display_<%= duel_day.id %>" class="w-16 text-center font-semibold text-lg"><%= number_with_precision(duel_day.score_goal, precision: 1) %></div>
+    <button type="button" onclick="incrementGoal(<%= duel_day.id %>)" class="w-8 h-8 text-lg font-bold text-white bg-green-600 rounded hover:bg-green-700 transition">+</button>
+  </div>
+  <div class="flex items-center justify-center gap-2">
+    <%= form.submit 'Save', class: 'px-3 py-1 text-xs font-semibold text-white bg-green-600 rounded hover:bg-green-700 transition' %>
+    <%= link_to 'Cancel', cancel_edit_goal_alliance_duel_duel_day_path(alliance_duel_start_date: duel_day.alliance_duel.start_date, id: duel_day.id), class: 'px-3 py-1 text-xs font-semibold text-white bg-gray-600 rounded hover:bg-gray-700 transition' %>
+  </div>
+<% end %>
+
+<script>
+function incrementGoal(duelDayId) {
+  const hiddenField = document.getElementById(`score_goal_${duelDayId}`);
+  const displayDiv = document.getElementById(`goal_display_${duelDayId}`);
+  const currentValue = parseFloat(hiddenField.value) || 0;
+  const newValue = currentValue + 0.1;
+  hiddenField.value = newValue.toFixed(1);
+  displayDiv.textContent = newValue.toFixed(1);
+}
+
+function decrementGoal(duelDayId) {
+  const hiddenField = document.getElementById(`score_goal_${duelDayId}`);
+  const displayDiv = document.getElementById(`goal_display_${duelDayId}`);
+  const currentValue = parseFloat(hiddenField.value) || 0;
+  const newValue = Math.max(0, currentValue - 0.1);
+  hiddenField.value = newValue.toFixed(1);
+  displayDiv.textContent = newValue.toFixed(1);
+}
+</script> 

@@ -6,5 +6,13 @@ FactoryBot.define do
     password { "password123" }
     password_confirmation { "password123" }
     role { :user }
+
+    trait :alliance_admin do
+      role { :alliance_admin }
+      after(:create) do |user|
+        create(:alliance, admin: user)
+        user.reload
+      end
+    end
   end
 end

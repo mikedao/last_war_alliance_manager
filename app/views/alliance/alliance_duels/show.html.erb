@@ -1,0 +1,164 @@
+<div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl p-6 sm:p-8 w-full max-w-7xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="font-bold text-3xl text-[var(--lw-accent-2)]">Alliance Duel: <%= @alliance_duel.start_date.strftime('%Y-%m-%d') %></h1>
+    <%= link_to '← Back to Alliance Duels', alliance_duels_path, class: "text-[var(--lw-accent)] hover:text-[var(--lw-accent-2)] transition font-semibold" %>
+  </div>
+  <p class="text-[var(--lw-muted)] mb-8"></p>
+  
+
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-[800px] text-[var(--lw-text)] text-center table-fixed">
+      <thead>
+        <tr class="border-b-2 border-[var(--lw-accent-3)]">
+          <th class="text-left py-3 px-4 sticky left-0 bg-[var(--lw-surface)] align-bottom">
+            <div class="flex flex-col items-start justify-end min-h-0 space-y-2">
+              <span class="text-xs text-[var(--lw-muted)]">&nbsp;</span>
+              <span class="text-xs text-[var(--lw-muted)]">&nbsp;</span>
+              <div class="w-16 h-8"></div>
+              <span class="font-bold text-white text-sm">Player</span>
+            </div>
+          </th>
+          <% @duel_days.each do |day| %>
+            <th class="py-3 px-4 align-bottom">
+              <div class="flex flex-col items-center justify-end min-h-0 space-y-2">
+                <span class="font-bold text-[var(--lw-accent-2)] text-sm"><%= day.name.upcase %></span>
+                <span class="text-xs text-[var(--lw-muted)]">(DAY <%= day.day_number %>)</span>
+                <%= turbo_frame_tag dom_id(day, :goal) do %>
+                  <%= render 'alliance/duel_days/duel_day_goal', duel_day: day %>
+                <% end %>
+                <%= render 'alliance/duel_days/lock_button', duel_day: day %>
+              </div>
+            </th>
+          <% end %>
+          <th class="py-3 px-4 align-bottom">
+            <div class="flex flex-col items-center justify-end min-h-0 space-y-2">
+              <span class="text-xs text-[var(--lw-muted)]">&nbsp;</span>
+              <span class="text-xs text-[var(--lw-muted)]">&nbsp;</span>
+              <div class="w-16 h-8"></div>
+              <span class="font-bold text-white text-sm">Total</span>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @players.each do |player| %>
+          <tr class="border-b border-[var(--lw-accent-3)]" data-player-id="<%= player.id %>">
+            <td class="text-left py-3 px-4 sticky left-0 bg-[var(--lw-surface)] font-semibold truncate max-w-32" title="<%= player.username %>"><%= player.username %></td>
+            <% @duel_days.each_with_index do |day, day_index| %>
+              <td class="py-3 px-4">
+                <% if current_user.alliance_admin? %>
+                  <%= turbo_frame_tag dom_id(day, "player_#{player.id}_score") do %>
+                    <%= render 'alliance/alliance_duels/score_input', player: player, day: day, day_index: day_index, players: @players %>
+                  <% end %>
+                <% else %>
+                  <div class="bg-[var(--lw-bg)] border border-[var(--lw-accent-3)] rounded-md w-16 h-8 mx-auto flex items-center justify-center">
+                    <% score = DuelDayScore.find_by(player: player, duel_day: day) %>
+                    <%= score&.score.nil? ? 'NA' : sprintf('%.1f', score.score) %>
+                  </div>
+                <% end %>
+              </td>
+            <% end %>
+            <td class="py-3 px-4 font-bold" data-total-score="true">
+              <%= sprintf('%.1f', calculate_player_total(player, @duel_days)) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function saveScore(input) {
+  const playerId = input.dataset.playerId;
+  const dayId = input.dataset.dayId;
+  const value = input.value.trim();
+  
+  console.log('saveScore called:', { playerId, dayId, value });
+  
+  // Always remove validation classes at the start
+  input.classList.remove('input-error', 'input-success');
+  
+  // If empty, just return (don't save)
+  if (value === '') {
+    console.log('Empty value, returning');
+    return;
+  }
+  
+  // If it's NA (any case), it's always valid
+  if (value.toUpperCase() !== 'NA') {
+    // Validate numeric input
+    const numValue = parseFloat(value);
+    if (isNaN(numValue) || numValue < 0 || !/^\d+(\.\d{0,1})?$/.test(value)) {
+      console.log('Invalid numeric input:', value);
+      input.classList.add('input-error');
+      return;
+    }
+  }
+  
+  // Prepare the data
+  const scoreData = {
+    player_id: playerId,
+    duel_day_id: dayId,
+    score: value.toUpperCase() === 'NA' ? null : value
+  };
+  
+  console.log('Sending score data:', scoreData);
+  
+  // Debug CSRF token
+  const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+  console.log('CSRF meta tag:', csrfMeta);
+  const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : null;
+  console.log('CSRF token:', csrfToken);
+  
+  // Send the data to the server
+  fetch('/dashboard/alliance_duels/<%= @alliance_duel.start_date %>/scores', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': csrfToken
+    },
+    body: JSON.stringify(scoreData)
+  })
+  .then(response => {
+    console.log('Response status:', response.status);
+    return response.json();
+  })
+  .then(data => {
+    console.log('Response data:', data);
+    if (data.success) {
+      input.classList.remove('input-error');
+      input.classList.add('input-success');
+      setTimeout(() => {
+        input.classList.remove('input-success');
+      }, 500);
+      
+      // Update total if provided
+      if (data.total !== undefined) {
+        console.log('Updating total to:', data.total);
+        const playerRow = document.querySelector(`tr[data-player-id="${playerId}"]`);
+        const totalCell = playerRow.querySelector('td[data-total-score="true"]');
+        if (totalCell) {
+          totalCell.textContent = parseFloat(data.total).toFixed(1);
+          console.log('Total cell updated');
+        } else {
+          console.log('Total cell not found');
+        }
+      }
+      // If NA, update the field to show 'NA'
+      if (data.score === 'NA') {
+        input.value = 'NA';
+      } else if (data.score !== undefined) {
+        input.value = parseFloat(data.score).toFixed(1);
+      }
+    } else {
+      console.log('Save failed:', data.error);
+      input.classList.add('input-error');
+    }
+  })
+  .catch(error => {
+    console.error('Error saving score:', error);
+    input.classList.add('input-error');
+  });
+}
+</script> 

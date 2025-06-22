@@ -28,3 +28,13 @@
   --lw-accent-3: #343a40;     /* dark slate gray for borders */
   --lw-accent-4: #23272b;     /* very dark gray for button backgrounds */
 }
+
+.input-success {
+  border-color: hsl(142.1, 76.2%, 36.3%) !important;
+  background-color: hsla(142.1, 76.2%, 36.3%, 0.2) !important;
+}
+
+.input-error {
+  border-color: #991b1b !important;
+  background-color: rgba(153, 27, 27, 0.2) !important;
+}

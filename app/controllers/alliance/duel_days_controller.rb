@@ -1,0 +1,91 @@
+class Alliance::DuelDaysController < ApplicationController
+  include ActionView::RecordIdentifier
+
+  before_action :require_login
+  before_action :require_alliance_admin_or_manager
+  before_action :set_alliance
+  before_action :set_alliance_duel
+  before_action :set_duel_day
+
+  def edit_goal
+    # This will implicitly render app/views/alliance/duel_days/edit_goal.html.erb
+  end
+
+  def update
+    if @duel_day.update(duel_day_params)
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            dom_id(@duel_day, :goal),
+            partial: "alliance/duel_days/duel_day_goal",
+            locals: { duel_day: @duel_day }
+          )
+        end
+        format.html { redirect_to alliance_duel_path(alliance_duel_start_date: @alliance_duel.start_date) }
+      end
+    else
+      # Handle errors if necessary, for now, re-render the form
+      render :edit_goal, status: :unprocessable_entity
+    end
+  end
+
+  def cancel_edit_goal
+    # This will implicitly render app/views/alliance/duel_days/cancel_edit_goal.html.erb
+  end
+
+  def toggle_lock
+    @duel_day.update!(locked: !@duel_day.locked)
+
+    respond_to do |format|
+      format.turbo_stream do
+        # Update the lock button
+        lock_button_stream = turbo_stream.replace(
+          dom_id(@duel_day, :lock_button),
+          partial: "alliance/duel_days/lock_button",
+          locals: { duel_day: @duel_day }
+        )
+
+        # Update all input fields for this day
+        input_streams = @alliance_duel.alliance.players.map do |player|
+          turbo_stream.replace(
+            dom_id(@duel_day, "player_#{player.id}_score"),
+            partial: "alliance/alliance_duels/score_input",
+            locals: {
+              player: player,
+              day: @duel_day,
+              day_index: @duel_day.day_number - 1,
+              players: @alliance_duel.alliance.players
+            }
+          )
+        end
+
+        render turbo_stream: [ lock_button_stream ] + input_streams
+      end
+      format.html { redirect_to alliance_duel_path(alliance_duel_start_date: @alliance_duel.start_date) }
+    end
+  end
+
+  private
+
+  def set_alliance
+    @alliance = current_user.alliance
+  end
+
+  def require_alliance_admin_or_manager
+    unless current_user.alliance_admin? || current_user.alliance_manager?
+      redirect_to dashboard_path, alert: "You are not authorized to perform this action."
+    end
+  end
+
+  def set_alliance_duel
+    @alliance_duel = @alliance.alliance_duels.find_by!(start_date: params[:alliance_duel_start_date])
+  end
+
+  def set_duel_day
+    @duel_day = @alliance_duel.duel_days.find(params[:id])
+  end
+
+  def duel_day_params
+    params.require(:duel_day).permit(:score_goal)
+  end
+end
