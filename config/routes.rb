@@ -54,6 +54,9 @@ Rails.application.routes.draw do
           patch :toggle_lock
         end
       end
+      
+      # Route for updating scores
+      post 'scores', to: 'alliance/alliance_duels#update_score'
     end
 
     delete '/alliance_duels/:id', to: 'alliance/alliance_duels#destroy', as: :delete_alliance_duel

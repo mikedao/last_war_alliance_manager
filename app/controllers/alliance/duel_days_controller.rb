@@ -38,11 +38,28 @@ class Alliance::DuelDaysController < ApplicationController
     
     respond_to do |format|
       format.turbo_stream do
-        render turbo_stream: turbo_stream.replace(
+        # Update the lock button
+        lock_button_stream = turbo_stream.replace(
           dom_id(@duel_day, :lock_button),
           partial: 'alliance/duel_days/lock_button',
           locals: { duel_day: @duel_day }
         )
+        
+        # Update all input fields for this day
+        input_streams = @alliance_duel.alliance.players.map do |player|
+          turbo_stream.replace(
+            dom_id(@duel_day, "player_#{player.id}_score"),
+            partial: 'alliance/alliance_duels/score_input',
+            locals: { 
+              player: player, 
+              day: @duel_day, 
+              day_index: @duel_day.day_number - 1, 
+              players: @alliance_duel.alliance.players 
+            }
+          )
+        end
+        
+        render turbo_stream: [lock_button_stream] + input_streams
       end
       format.html { redirect_to alliance_duel_path(alliance_duel_start_date: @alliance_duel.start_date) }
     end

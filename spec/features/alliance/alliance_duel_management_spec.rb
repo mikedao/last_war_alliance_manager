@@ -148,6 +148,25 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       expect(page).to have_content("Alliance Duel: #{duel_date.strftime('%Y-%m-%d')}")
     end
 
+    it 'shows a "Back to Alliance Duels" link on the duel details page' do
+      duel_date = Date.new(2025, 6, 22)
+      duel = create(:alliance_duel, alliance: user.alliance, start_date: duel_date)
+      visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
+
+      expect(page).to have_link('← Back to Alliance Duels')
+    end
+
+    it 'navigates back to the alliance duels index when clicking the back link' do
+      duel_date = Date.new(2025, 6, 22)
+      duel = create(:alliance_duel, alliance: user.alliance, start_date: duel_date)
+      visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
+
+      click_link '← Back to Alliance Duels'
+
+      expect(page).to have_current_path(alliance_duels_path)
+      expect(page).to have_content('Alliance Duels')
+    end
+
     it 'redirects to the index page if the duel is not found' do
       visit '/dashboard/alliance_duels/2099-01-01'
       expect(page).to have_current_path(alliance_duels_path)
@@ -200,9 +219,11 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
         expect(page).to have_content('1111.0')
         # Click the increment button a few times to increase the value
         click_button '+'
+        expect(page).to have_content('1111.1', wait: 2)
         click_button '+'
+        expect(page).to have_content('1111.2', wait: 2)
         click_button '+'
-        expect(page).to have_content('1111.3')
+        expect(page).to have_content('1111.3', wait: 2)
         click_button 'Save'
       end
 
@@ -236,10 +257,13 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'does not prevent editing goals when day is locked' do
-      within("turbo-frame#lock_button_duel_day_#{day_one.id}") do
-        click_button 'Lock'
-        expect(page).to have_button('Locked')
-      end
+      # Find and click the first lock button (day one)
+      lock_button = first('button', text: 'Lock')
+      lock_button.click
+      # Wait for the button to show it's locked, confirming the async action
+      expect(page).to have_button('Locked', wait: 5)
+      
+      # Check that the edit goal link is still available
       within("turbo-frame#goal_duel_day_#{day_one.id}") do
         expect(page).to have_selector("a[href*='duel_days/#{day_one.id}/edit_goal']")
       end
@@ -269,6 +293,123 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       click_on 'Log In'
       visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
       expect(page).not_to have_button('Lock')
+    end
+  end
+
+  describe 'editing player scores', js: true do
+    let(:duel_date) { Date.new(2025, 6, 22) }
+    let!(:duel) { create(:alliance_duel, alliance: user.alliance, start_date: duel_date) }
+    let!(:player1) { create(:player, alliance: user.alliance, username: 'PlayerOneUnique') }
+    let!(:player2) { create(:player, alliance: user.alliance, username: 'PlayerTwoUnique') }
+    let!(:day_one) { duel.duel_days.find_by(day_number: 1) }
+    let!(:day_two) { duel.duel_days.find_by(day_number: 2) }
+
+    before do
+      visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
+    end
+
+    it 'allows alliance admins to edit player scores' do
+      player_row = find("tr[data-player-id='#{player1.id}']")
+      within(player_row) do
+        input = first('input[type="text"]')
+        expect(input).to be_present
+        input.set('3.5')
+        page.execute_script('arguments[0].blur()', input.native)
+        sleep 1
+      end
+      score = DuelDayScore.find_by(player: player1, duel_day: day_one)
+      expect(score).to be_present
+      expect(score.score).to eq(3.5)
+    end
+
+    it 'manually triggers the save function' do
+      player_row = find("tr[data-player-id='#{player1.id}']")
+      
+      within(player_row) do
+        input = first('input[type="text"]')
+        input.set('3.5')
+        
+        # Manually trigger the save function
+        page.execute_script("saveScore(arguments[0])", input.native)
+        
+        sleep 2
+      end
+      
+      # Check the database
+      score = DuelDayScore.find_by(player: player1, duel_day: day_one)
+      expect(score).to be_present
+      expect(score.score).to eq(3.5)
+    end
+
+    it 'allows entering NA as a score' do
+      player_row = find("tr[data-player-id='#{player1.id}']")
+      within(player_row) do
+        input = first('input[type="text"]')
+        input.set('NA')
+        page.execute_script('arguments[0].blur()', input.native)
+        sleep 1
+        expect(page).to have_selector('td[data-total-score="true"]', text: '0.0', wait: 5)
+      end
+      score = DuelDayScore.find_by(player: player1, duel_day: day_one)
+      expect(score).to be_present
+      expect(score.score).to be_nil
+    end
+
+    it 'updates totals automatically when scores are saved' do
+      player_row = find("tr[data-player-id='#{player1.id}']")
+      within(player_row) do
+        inputs = all('input[type="text"]')
+        inputs[0].set('3.5')
+        page.execute_script('arguments[0].blur()', inputs[0].native)
+        expect(page).to have_selector('td[data-total-score="true"]', text: '3.5', wait: 5)
+        inputs[1].set('2.0')
+        page.execute_script('arguments[0].blur()', inputs[1].native)
+        expect(page).to have_selector('td[data-total-score="true"]', text: '5.5', wait: 5)
+      end
+      total_cell = find("tr[data-player-id='#{player1.id}'] td[data-total-score='true']")
+      expect(total_cell).to have_content('5.5')
+    end
+
+    it 'treats NA as zero in total calculations' do
+      player_row = find("tr[data-player-id='#{player1.id}']")
+      within(player_row) do
+        inputs = all('input[type="text"]')
+        inputs[0].set('3.5')
+        page.execute_script('arguments[0].blur()', inputs[0].native)
+        expect(page).to have_selector('td[data-total-score="true"]', text: '3.5', wait: 5)
+        inputs[1].set('NA')
+        page.execute_script('arguments[0].blur()', inputs[1].native)
+        expect(page).to have_selector('td[data-total-score="true"]', text: '3.5', wait: 5)
+      end
+      total_cell = find("tr[data-player-id='#{player1.id}'] td[data-total-score='true']")
+      expect(total_cell).to have_content('3.5')
+    end
+
+    it 'disables score fields when day is locked' do
+      # Find and click the first lock button (day one)
+      lock_button = first('button', text: 'Lock')
+      lock_button.click
+      # Wait for the button to show it's locked, confirming the async action
+      expect(page).to have_button('Locked', wait: 5)
+
+      # Check that the input in player1's row for day 1 is disabled
+      player_row = find("tr[data-player-id='#{player1.id}']")
+      within(player_row) do
+        day_one_input = find("input[data-day-id='#{day_one.id}']")
+        expect(day_one_input).to be_disabled
+      end
+    end
+
+    it 'prevents non-admin users from editing scores' do
+      user.update!(role: :user)
+      visit logout_path
+      visit login_path
+      fill_in 'Username', with: user.username
+      fill_in 'Password', with: 'password123'
+      click_on 'Log In'
+      visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
+
+      expect(page).not_to have_selector("input[type='text']")
     end
   end
 end 
