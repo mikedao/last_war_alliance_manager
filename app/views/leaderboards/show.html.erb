@@ -1,0 +1,38 @@
+<section class="flex justify-center items-center min-h-[60vh]">
+  <div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl px-6 sm:px-10 py-8 sm:py-12 max-w-5xl w-full mx-4">
+    <h1 class="font-bold text-3xl mb-6 text-[var(--lw-accent-2)] text-center">Leaderboard for <%= @alliance.name %></h1>
+
+    <section class="mb-8">
+      <h2 class="text-xl font-semibold mb-4 text-[var(--lw-accent-2)] text-center">Top Daily Performers</h2>
+      
+      <% if @latest_locked_day %>
+        <p class="text-center text-[var(--lw-muted)] mb-6">
+          Showing results for: Duel Started <%= @duel.start_date.strftime('%B %d, %Y') %> - Day <%= @latest_locked_day.day_number %>: <%= @latest_locked_day.name %>
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center max-w-2xl mx-auto mb-8">
+          <% stats = made_goal_stats %>
+          <div class="bg-[var(--lw-accent-4)] border border-[var(--lw-accent-3)] p-4 rounded-lg">
+            <p class="text-[var(--lw-muted)] text-sm font-medium">Made Goal</p>
+            <p class="text-2xl font-bold text-[var(--lw-accent-2)]">🏆 <%= stats[:count] %> / <%= stats[:total] %> (<%= number_with_precision(stats[:percentage], precision: 1) %>%)</p>
+          </div>
+          <div class="bg-[var(--lw-accent-4)] border border-[var(--lw-accent-3)] p-4 rounded-lg">
+            <p class="text-[var(--lw-muted)] text-sm font-medium">Missed Goal</p>
+            <p class="text-2xl font-bold text-[var(--lw-accent-2)]">💀 <%= missed_goal_count %></p>
+          </div>
+          <div class="bg-[var(--lw-accent-4)] border border-[var(--lw-accent-3)] p-4 rounded-lg">
+            <p class="text-[var(--lw-muted)] text-sm font-medium">Average Score</p>
+            <p class="text-2xl font-bold text-[var(--lw-accent-2)]">📊 <%= average_score %></p>
+          </div>
+        </div>
+
+        <%# Player ranking table will go here %>
+      <% else %>
+        <div class="text-center text-[var(--lw-muted)] p-8 border-2 border-dashed border-[var(--lw-accent-3)] rounded-lg">
+          No data to display until a day is locked
+        </div>
+      <% end %>
+    </section>
+  </div>
+</section> 
+ 

@@ -34,11 +34,14 @@
       </div>
     <% end %>
     <nav class="w-full fixed top-0 left-0 flex items-center justify-between py-4 px-8 shadow z-50 bg-[var(--lw-surface)] text-[var(--lw-text)] border-b border-[var(--lw-accent-3)]">
-      <%= link_to 'Last War Alliance Manager', root_path, class: "text-3xl font-bold text-white hover:text-[var(--lw-accent)] transition" %>
+      <%= link_to 'Last War Alliance Manager', root_path, class: "text-3xl font-bold text-[var(--lw-text)] hover:text-[var(--lw-accent-2)] transition" %>
       <div class="flex items-center gap-4">
         <% if logged_in? %>
           <% if show_dashboard_link? %>
             <%= link_to 'Dashboard', dashboard_path, class: "text-[var(--lw-text)] hover:text-[var(--lw-accent)] transition font-bold" %>
+          <% end %>
+          <% if current_user.alliance %>
+            <%= link_to 'Leaderboard', public_leaderboard_path(current_user.alliance.tag), class: "text-[var(--lw-text)] hover:text-[var(--lw-accent)] transition font-bold" %>
           <% end %>
           <%= form_with url: logout_path, method: :delete, class: "inline" do %>
             <%= submit_tag 'Logout', class: "text-[var(--lw-text)] hover:text-[var(--lw-accent)] transition cursor-pointer bg-transparent border-none p-0 font-bold" %>

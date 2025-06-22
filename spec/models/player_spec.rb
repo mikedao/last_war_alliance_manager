@@ -45,7 +45,7 @@ RSpec.describe Player, type: :model do
         %w[R0 R6 R10 A1 B2].each do |rank|
           player = build(:player, rank: rank, alliance: alliance)
           expect(player).not_to be_valid
-          expect(player.errors[:rank]).to include('must be one of: R1, R2, R3, R4, R5')
+          expect(player.errors[:rank]).to include('must be in the format R1, R2, R3, R4, or R5')
         end
       end
     end

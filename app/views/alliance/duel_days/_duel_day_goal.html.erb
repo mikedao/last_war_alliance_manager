@@ -1,11 +1,6 @@
-<% unless duel_day.locked? %>
-  <a class="block w-full" href="<%= edit_goal_alliance_duel_duel_day_path(alliance_duel_start_date: duel_day.alliance_duel.start_date, id: duel_day.id) %>">
-    <div class="font-semibold text-lg"><%= number_with_precision(duel_day.score_goal, precision: 1) %></div>
-    <div class="text-xs text-[var(--lw-muted)]">Goal</div>
-  </a>
-<% else %>
-  <div class="block w-full">
-    <div class="font-semibold text-lg"><%= number_with_precision(duel_day.score_goal, precision: 1) %></div>
-    <div class="text-xs text-[var(--lw-muted)]">Goal</div>
-  </div>
+<%= link_to edit_goal_alliance_duel_duel_day_path(alliance_duel_start_date: duel_day.alliance_duel.start_date, id: duel_day.id), 
+            class: "block w-full text-center p-1 rounded hover:bg-[var(--lw-accent-4)] transition cursor-pointer",
+            data: { turbo_frame: dom_id(duel_day, :goal) } do %>
+  <div class="font-semibold text-lg"><%= number_with_precision(duel_day.score_goal, precision: 1) %></div>
+  <div class="text-xs text-[var(--lw-muted)]">Goal</div>
 <% end %> 

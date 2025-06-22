@@ -1,10 +1,14 @@
 FactoryBot.define do
   factory :player do
-    sequence(:username) { |n| "player#{n}" }
-    rank { 'R1' }
-    level { 50 }
-    notes { 'A test player' }
-    active { true }
     association :alliance
+    sequence(:username) { |n| "Player_#{n}" }
+    rank { 'R4' }
+    level { 25 }
+    active { true }
+    notes { 'A test player' }
+
+    trait :inactive do
+      active { false }
+    end
   end
 end
