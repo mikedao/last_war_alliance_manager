@@ -126,4 +126,92 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       expect(page).to have_current_path(alliance_duels_path)
     end
   end
+
+  describe 'viewing a duel' do
+    it 'shows a "View Details" link for each duel' do
+      duel = create(:alliance_duel, alliance: user.alliance, start_date: Date.today)
+      visit alliance_duels_path
+
+      within("#duel_row_#{duel.id}") do
+        expect(page).to have_link('View Details')
+      end
+    end
+
+    it 'navigates to the duel details page with a date-based URL' do
+      duel_date = Date.new(2025, 6, 22)
+      duel = create(:alliance_duel, alliance: user.alliance, start_date: duel_date)
+      visit alliance_duels_path
+
+      click_link 'View Details'
+
+      expect(page).to have_current_path("/dashboard/alliance_duels/#{duel_date.to_s}")
+      expect(page).to have_content("Alliance Duel: #{duel_date.strftime('%Y-%m-%d')}")
+    end
+
+    it 'redirects to the index page if the duel is not found' do
+      visit '/dashboard/alliance_duels/2099-01-01'
+      expect(page).to have_current_path(alliance_duels_path)
+      expect(page).to have_content('Duel not found.')
+    end
+
+    it 'displays a table with players and duel days' do
+      duel_date = Date.new(2025, 6, 22)
+      alliance = user.alliance
+      create_list(:player, 5, alliance: alliance)
+      duel = create(:alliance_duel, alliance: alliance, start_date: duel_date)
+
+      visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
+
+      within('table') do
+        # Check for headers (no 'Player' header now)
+        duel.duel_days.each do |day|
+          expect(page).to have_selector('th', text: day.name.upcase)
+        end
+        expect(page).to have_selector('th', text: 'TOTAL', count: 1)
+
+        # Check for player rows
+        alliance.players.each do |player|
+          expect(page).to have_selector('td', text: player.username)
+        end
+      end
+    end
+  end
+
+  describe 'editing a duel day goal', js: true do
+    let(:duel_date) { Date.new(2025, 6, 22) }
+    let!(:duel) { create(:alliance_duel, alliance: user.alliance, start_date: duel_date) }
+    let!(:day_one) { duel.duel_days.find_by(day_number: 1) }
+
+    before do
+      # Set a unique initial goal to avoid ambiguous matches later
+      day_one.update!(score_goal: 1111.0)
+      visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
+    end
+
+    it 'allows inline editing of the score goal' do
+      # 1. Wait for the page to be ready by looking for our unique content.
+      expect(page).to have_content('1111.0')
+
+      # 2. Find the unique "edit" link for Day 1's goal and click it.
+      find("a[href*='duel_days/#{day_one.id}/edit_goal']").click
+
+      # 3. The form should now be on the page with increment/decrement buttons.
+      within("turbo-frame#goal_duel_day_#{day_one.id}") do
+        expect(page).to have_content('1111.0')
+        # Click the increment button a few times to increase the value
+        click_button '+'
+        click_button '+'
+        click_button '+'
+        expect(page).to have_content('1111.3')
+        click_button 'Save'
+      end
+
+      # 4. The page should update with the new value.
+      expect(page).to have_content('1111.3')
+      expect(page).not_to have_content('1111.0')
+
+      # 5. Verify the change is persisted in the database.
+      expect(day_one.reload.score_goal).to eq(1111.3)
+    end
+  end
 end 

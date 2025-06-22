@@ -57,6 +57,7 @@ group :development, :test do
   gem "factory_bot_rails"
   gem "faker"
   gem "capybara"
+  gem "pry"
 end
 
 group :development do

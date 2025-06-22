@@ -1,0 +1,44 @@
+<div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl p-6 sm:p-8 w-full max-w-7xl mx-auto">
+  <h1 class="font-bold text-3xl text-[var(--lw-accent-2)] mb-6">Alliance Duel: <%= @alliance_duel.start_date.strftime('%Y-%m-%d') %></h1>
+  <p class="text-[var(--lw-muted)] mb-8"></p>
+  
+
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-[800px] text-[var(--lw-text)] text-center table-fixed">
+      <thead>
+        <tr class="border-b-2 border-[var(--lw-accent-3)]">
+          <th class="text-left py-3 px-4 sticky left-0 bg-[var(--lw-surface)] align-bottom"><span>&nbsp;</span></th>
+          <% @duel_days.each do |day| %>
+            <th class="py-3 px-4 align-bottom">
+              <div class="flex flex-col items-center justify-end min-h-0 space-y-2">
+                <span class="font-bold text-[var(--lw-accent-2)] text-sm"><%= day.name.upcase %></span>
+                <span class="text-xs text-[var(--lw-muted)]">(DAY <%= day.day_number %>)</span>
+                <%= turbo_frame_tag dom_id(day, :goal) do %>
+                  <%= render 'alliance/duel_days/duel_day_goal', duel_day: day %>
+                <% end %>
+                <!-- Lock Button will go here -->
+              </div>
+            </th>
+          <% end %>
+          <th class="py-3 px-4 align-bottom flex items-end justify-center">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @players.each do |player| %>
+          <tr class="border-b border-[var(--lw-accent-3)]">
+            <td class="text-left py-3 px-4 sticky left-0 bg-[var(--lw-surface)] font-semibold"><%= player.username %></td>
+            <% @duel_days.each do |day| %>
+              <td class="py-3 px-4">
+                <!-- Score input will go here -->
+                <div class="bg-[var(--lw-bg)] border border-[var(--lw-accent-3)] rounded-md w-18 h-8 mx-auto flex items-center justify-center">
+                  0
+                </div>
+              </td>
+            <% end %>
+            <td class="py-3 px-4 font-bold">0.0</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div> 

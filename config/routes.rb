@@ -38,6 +38,23 @@ Rails.application.routes.draw do
   get "dashboard", to: "alliances#show", as: :dashboard
 
   scope '/dashboard' do
-    resources :alliance_duels, only: [ :index, :new, :create, :destroy ], controller: 'alliance/alliance_duels'
+    get '/alliance_duels', to: 'alliance/alliance_duels#index', as: :alliance_duels
+    get '/alliance_duels/new', to: 'alliance/alliance_duels#new', as: :new_alliance_duel
+    post '/alliance_duels', to: 'alliance/alliance_duels#create'
+    
+    # Custom route for the parent resource using start_date
+    scope '/alliance_duels/:alliance_duel_start_date' do
+      get '', to: 'alliance/alliance_duels#show', as: :alliance_duel
+      
+      # Nested routes for duel_days
+      resources :duel_days, only: [:update], controller: 'alliance/duel_days', as: 'alliance_duel_duel_days' do
+        member do
+          get :edit_goal
+          get :cancel_edit_goal
+        end
+      end
+    end
+
+    delete '/alliance_duels/:id', to: 'alliance/alliance_duels#destroy', as: :delete_alliance_duel
   end
 end

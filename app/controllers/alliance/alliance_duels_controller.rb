@@ -35,6 +35,18 @@ class Alliance::AllianceDuelsController < ApplicationController
     end
   end
 
+  def show
+    @alliance_duel = @alliance.alliance_duels.includes(:duel_days).find_by(start_date: params[:alliance_duel_start_date])
+
+    if @alliance_duel.nil?
+      redirect_to alliance_duels_path, alert: 'Duel not found.'
+      return
+    end
+
+    @duel_days = @alliance_duel.duel_days.order(:day_number)
+    @players = @alliance.players.order(Arel.sql("LOWER(username)"))
+  end
+
   private
 
   def set_alliance
