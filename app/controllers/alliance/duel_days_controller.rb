@@ -15,7 +15,7 @@ class Alliance::DuelDaysController < ApplicationController
     if @duel_day.update(duel_day_params)
       respond_to do |format|
         format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
+          render turbo_stream: turbo_stream.update(
             dom_id(@duel_day, :goal),
             partial: "alliance/duel_days/duel_day_goal",
             locals: { duel_day: @duel_day }
@@ -45,6 +45,13 @@ class Alliance::DuelDaysController < ApplicationController
           locals: { duel_day: @duel_day }
         )
 
+        # Update the goal display
+        goal_stream = turbo_stream.update(
+          dom_id(@duel_day, :goal),
+          partial: "alliance/duel_days/duel_day_goal",
+          locals: { duel_day: @duel_day }
+        )
+
         # Update all input fields for this day
         input_streams = @alliance_duel.alliance.players.map do |player|
           turbo_stream.replace(
@@ -59,7 +66,7 @@ class Alliance::DuelDaysController < ApplicationController
           )
         end
 
-        render turbo_stream: [ lock_button_stream ] + input_streams
+        render turbo_stream: [ lock_button_stream, goal_stream ] + input_streams
       end
       format.html { redirect_to alliance_duel_path(alliance_duel_start_date: @alliance_duel.start_date) }
     end

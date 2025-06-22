@@ -93,11 +93,11 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
 
       expected_days = [
         { day_number: 1, name: 'Radar Training' },
-        { day_number: 2, name: 'Base Expansion' },
-        { day_number: 3, name: 'Age of Science' },
-        { day_number: 4, name: 'Train Heroes' },
-        { day_number: 5, name: 'Total Mobilization' },
-        { day_number: 6, name: 'Enemy Buster' }
+        { day_number: 2, name: 'Hero Development' },
+        { day_number: 3, name: 'Building and Research' },
+        { day_number: 4, name: 'Troop Training' },
+        { day_number: 5, name: 'Kill Enemies' },
+        { day_number: 6, name: 'Free Development' }
       ]
 
       expected_days.each do |expected_day|
@@ -186,7 +186,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
         duel.duel_days.each do |day|
           expect(page).to have_selector('th', text: day.name.upcase)
         end
-        expect(page).to have_selector('th', text: 'TOTAL', count: 1)
+        expect(page).to have_selector('th', text: 'Total', count: 1)
 
         # Check for player rows
         alliance.players.each do |player|
@@ -202,6 +202,11 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     let!(:day_one) { duel.duel_days.find_by(day_number: 1) }
 
     before do
+      # Log in as the test user
+      visit login_path
+      fill_in 'Username', with: user.username
+      fill_in 'Password', with: 'password123'
+      click_on 'Log In'
       # Set a unique initial goal to avoid ambiguous matches later
       day_one.update!(score_goal: 1111.0)
       visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
@@ -211,28 +216,25 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       # 1. Wait for the page to be ready by looking for our unique content.
       expect(page).to have_content('1111.0')
 
-      # 2. Find the unique "edit" link for Day 1's goal and click it.
+      # 2. Click on the goal value to trigger inline editing
       find("a[href*='duel_days/#{day_one.id}/edit_goal']").click
 
-      # 3. The form should now be on the page with increment/decrement buttons.
+      # 3. The form should now be on the page with a text input
       within("turbo-frame#goal_duel_day_#{day_one.id}") do
-        expect(page).to have_content('1111.0')
-        # Click the increment button a few times to increase the value
-        click_button '+'
-        expect(page).to have_content('1111.1', wait: 2)
-        click_button '+'
-        expect(page).to have_content('1111.2', wait: 2)
-        click_button '+'
-        expect(page).to have_content('1111.3', wait: 2)
-        click_button 'Save'
+        expect(page).to have_field("duel_day_score_goal", with: "1111.0")
+        expect(page).to have_link("Cancel")
+
+        # 4. Update the goal value and trigger blur to auto-save
+        fill_in "duel_day_score_goal", with: "1500.0"
+        page.execute_script('arguments[0].blur()', find_field("duel_day_score_goal").native)
       end
 
-      # 4. The page should update with the new value.
-      expect(page).to have_content('1111.3')
+      # 5. Wait for the page to update with the new value
+      expect(page).to have_content('1500.0', wait: 5)
       expect(page).not_to have_content('1111.0')
 
-      # 5. Verify the change is persisted in the database.
-      expect(day_one.reload.score_goal).to eq(1111.3)
+      # 6. Verify the change is persisted in the database.
+      expect(day_one.reload.score_goal).to eq(1500.0)
     end
   end
 
@@ -242,10 +244,18 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     let!(:day_one) { duel.duel_days.find_by(day_number: 1) }
 
     before do
+      # Log in as the test user
+      visit login_path
+      fill_in 'Username', with: user.username
+      fill_in 'Password', with: 'password123'
+      click_on 'Log In'
       visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
     end
 
     it 'allows alliance admins to lock and unlock days' do
+      # Wait for the lock button frame to be present
+      expect(page).to have_selector("turbo-frame#lock_button_duel_day_#{day_one.id}", wait: 10)
+
       within("turbo-frame#lock_button_duel_day_#{day_one.id}") do
         expect(page).to have_button('Lock')
         click_button 'Lock'
@@ -257,11 +267,17 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'does not prevent editing goals when day is locked' do
+      # Wait for the goal frame to be present first
+      expect(page).to have_selector("turbo-frame#goal_duel_day_#{day_one.id}", wait: 10)
+
       # Find and click the first lock button (day one)
       lock_button = first('button', text: 'Lock')
       lock_button.click
       # Wait for the button to show it's locked, confirming the async action
       expect(page).to have_button('Locked', wait: 5)
+
+      # Wait for the turbo-frame to be present again after locking
+      expect(page).to have_selector("turbo-frame#goal_duel_day_#{day_one.id}", wait: 5)
 
       # Check that the edit goal link is still available
       within("turbo-frame#goal_duel_day_#{day_one.id}") do
@@ -305,10 +321,19 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     let!(:day_two) { duel.duel_days.find_by(day_number: 2) }
 
     before do
+      # Log in as the test user
+      visit login_path
+      fill_in 'Username', with: user.username
+      fill_in 'Password', with: 'password123'
+      click_on 'Log In'
       visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
     end
 
     it 'allows alliance admins to edit player scores' do
+      # Wait for the page to fully load and ensure players are present
+      expect(page).to have_content('PlayerOneUnique', wait: 10)
+      expect(page).to have_content('PlayerTwoUnique', wait: 10)
+
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
@@ -325,12 +350,17 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'manually triggers the save function' do
+      # Wait for the page to fully load and ensure players are present
+      expect(page).to have_content('PlayerOneUnique', wait: 10)
+      expect(page).to have_content('PlayerTwoUnique', wait: 10)
+
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
 
       within(player_row) do
         input = first('input[type="text"]')
+        expect(input).to be_present
         input.set('3.5')
 
         # Manually trigger the save function
@@ -346,11 +376,16 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'allows entering NA as a score' do
+      # Wait for the page to fully load and ensure players are present
+      expect(page).to have_content('PlayerOneUnique', wait: 10)
+      expect(page).to have_content('PlayerTwoUnique', wait: 10)
+
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
       within(player_row) do
         input = first('input[type="text"]')
+        expect(input).to be_present
         input.set('NA')
         page.execute_script('arguments[0].blur()', input.native)
         sleep 1
@@ -362,11 +397,16 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'updates totals automatically when scores are saved' do
+      # Wait for the page to fully load and ensure players are present
+      expect(page).to have_content('PlayerOneUnique', wait: 10)
+      expect(page).to have_content('PlayerTwoUnique', wait: 10)
+
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
       within(player_row) do
         inputs = all('input[type="text"]')
+        expect(inputs.length).to be >= 2
         inputs[0].set('3.5')
         page.execute_script('arguments[0].blur()', inputs[0].native)
         expect(page).to have_selector('td[data-total-score="true"]', text: '3.5', wait: 5)
@@ -379,11 +419,16 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'treats NA as zero in total calculations' do
+      # Wait for the page to fully load and ensure players are present
+      expect(page).to have_content('PlayerOneUnique', wait: 10)
+      expect(page).to have_content('PlayerTwoUnique', wait: 10)
+
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
       within(player_row) do
         inputs = all('input[type="text"]')
+        expect(inputs.length).to be >= 2
         inputs[0].set('3.5')
         page.execute_script('arguments[0].blur()', inputs[0].native)
         expect(page).to have_selector('td[data-total-score="true"]', text: '3.5', wait: 5)
@@ -396,11 +441,18 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'disables score fields when day is locked' do
+      # Wait for the page to fully load and ensure players are present
+      expect(page).to have_content('PlayerOneUnique', wait: 10)
+      expect(page).to have_content('PlayerTwoUnique', wait: 10)
+
       # Find and click the first lock button (day one)
-      lock_button = first('button', text: 'Lock')
-      lock_button.click
-      # Wait for the button to show it's locked, confirming the async action
-      expect(page).to have_button('Locked', wait: 5)
+      expect(page).to have_selector("turbo-frame#lock_button_duel_day_#{day_one.id}", wait: 10)
+      within("turbo-frame#lock_button_duel_day_#{day_one.id}") do
+        lock_button = find('button', text: 'Lock')
+        lock_button.click
+        # Wait for the button to show it's locked, confirming the async action
+        expect(page).to have_button('Locked', wait: 5)
+      end
 
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
