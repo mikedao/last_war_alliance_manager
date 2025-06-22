@@ -36,4 +36,8 @@ Rails.application.routes.draw do
     end
   end
   get "dashboard", to: "alliances#show", as: :dashboard
+
+  scope '/dashboard' do
+    resources :alliance_duels, only: [ :index, :new, :create ], controller: 'alliance/alliance_duels'
+  end
 end

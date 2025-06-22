@@ -1,0 +1,31 @@
+<section class="flex justify-center items-center min-h-[60vh]">
+  <div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl px-6 sm:px-10 py-8 sm:py-12 max-w-5xl w-full mx-4">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="font-bold text-3xl text-[var(--lw-accent-2)]">Alliance Duels</h1>
+      <%= link_to 'Create New Duel', new_alliance_duel_path, class: "inline-block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-6 py-3 hover:bg-[var(--lw-accent)] transition" %>
+    </div>
+    
+    <% if @alliance_duels.any? %>
+      <table class="w-full text-[var(--lw-text)]">
+        <thead>
+          <tr class="border-b border-[var(--lw-accent-3)]">
+            <th class="text-left py-3 px-4">Start Date</th>
+            <th class="text-left py-3 px-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @alliance_duels.each do |duel| %>
+            <tr class="border-b border-[var(--lw-accent-3)]">
+              <td class="py-3 px-4"><%= duel.start_date.strftime('%A, %B %d, %Y') %></td>
+              <td class="py-3 px-4"></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="text-center text-[var(--lw-text)]">
+        There are no active or past duels to display.
+      </p>
+    <% end %>
+  </div>
+</section> 

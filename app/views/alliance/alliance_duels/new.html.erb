@@ -1,0 +1,16 @@
+<section class="flex justify-center items-center min-h-[60vh]">
+  <div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl px-6 sm:px-10 py-8 sm:py-12 max-w-5xl w-full mx-4">
+    <h1 class="font-bold text-3xl mb-6 text-[var(--lw-accent-2)]">New Alliance Duel</h1>
+
+    <%= form_with(model: @alliance_duel, url: alliance_duels_path) do |form| %>
+      <div class="mb-4">
+        <%= form.label :start_date, class: "block text-[var(--lw-text)] font-bold mb-2" %>
+        <%= form.date_field :start_date, class: "shadow appearance-none border rounded w-full py-2 px-3 text-[var(--lw-text)] bg-[var(--lw-bg)] leading-tight focus:outline-none focus:shadow-outline" %>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <%= form.submit "Create Duel", class: "cursor-pointer rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-6 py-3 hover:bg-[var(--lw-accent)] transition" %>
+      </div>
+    <% end %>
+  </div>
+</section> 
