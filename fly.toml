@@ -28,4 +28,4 @@ console_command = '/rails/bin/rails console'
 
 [mounts]
   source="last_war_alliance_manager"
-  destination="/mnt/last_war_alliance_manager
+  destination="/mnt/last_war_alliance_manager"
