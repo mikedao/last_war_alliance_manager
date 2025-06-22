@@ -11,12 +11,14 @@
         <div><span class="font-semibold">Admin:</span> <%= @alliance.admin.display_name %></div>
       </div>
       
-      <% if current_user.alliance_admin? %>
+      <% if current_user.alliance_admin? || current_user.alliance_manager? %>
         <div class="mb-6 text-center">
           <h2 class="text-xl font-semibold mb-4 text-[var(--lw-accent-2)]">Management</h2>
           <div class="flex flex-wrap gap-4 justify-center">
-            <%= link_to 'Manage Players', alliance_players_path(@alliance), class: "inline-block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-6 py-3 hover:bg-[var(--lw-accent)] transition" %>
-            <%= link_to 'Bulk Add Players', bulk_add_alliance_players_path(@alliance), class: "inline-block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-6 py-3 hover:bg-[var(--lw-accent)] transition" %>
+            <%= link_to 'Manage Players', players_path, class: "inline-block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-6 py-3 hover:bg-[var(--lw-accent)] transition" %>
+            <% if current_user.alliance_admin? %>
+              <%= link_to 'Bulk Add Players', bulk_add_players_path, class: "inline-block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-6 py-3 hover:bg-[var(--lw-accent)] transition" %>
+            <% end %>
             <%= link_to 'Manage Alliance Duels', alliance_duels_path, class: "inline-block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-6 py-3 hover:bg-[var(--lw-accent)] transition" %>
           </div>
         </div>

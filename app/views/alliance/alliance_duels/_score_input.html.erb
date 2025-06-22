@@ -4,6 +4,7 @@
        placeholder="0.0"
        data-player-id="<%= player.id %>"
        data-day-id="<%= day.id %>"
+       data-locked="<%= day.locked? %>"
        tabindex="<%= day_index * players.count + players.index(player) + 1 %>"
        class="w-16 h-8 text-center bg-[var(--lw-bg)] border border-[var(--lw-accent-3)] rounded-md <%= day.locked? ? 'opacity-50 cursor-not-allowed' : '' %>"
        <%= 'disabled' if day.locked? %>

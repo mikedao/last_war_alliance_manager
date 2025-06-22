@@ -2,7 +2,7 @@
   <div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl px-6 sm:px-10 py-8 sm:py-12 max-w-6xl w-full mx-4">
     <div class="flex justify-between items-center mb-6">
       <h1 class="font-bold text-3xl text-[var(--lw-accent-2)]">Bulk Import Results</h1>
-      <%= link_to 'Back to Players', alliance_players_path(@alliance), class: "text-[var(--lw-accent-2)] hover:text-[var(--lw-accent)] transition" %>
+      <%= link_to 'Back to Players', players_path, class: "text-[var(--lw-accent-2)] hover:text-[var(--lw-accent)] transition" %>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -76,8 +76,8 @@
     <% end %>
 
     <div class="flex gap-4 pt-4">
-      <%= link_to 'Add More Players', bulk_add_alliance_players_path(@alliance), class: "flex-1 bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold py-3 px-6 rounded hover:bg-[var(--lw-accent)] transition text-center" %>
-      <%= link_to 'View All Players', alliance_players_path(@alliance), class: "flex-1 bg-[var(--lw-accent-4)] text-[var(--lw-text)] font-bold py-3 px-6 rounded hover:bg-[var(--lw-accent-3)] transition text-center" %>
+      <%= link_to 'Add More Players', bulk_add_players_path, class: "flex-1 bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold py-3 px-6 rounded hover:bg-[var(--lw-accent)] transition text-center" %>
+      <%= link_to 'View All Players', players_path, class: "flex-1 bg-[var(--lw-accent-4)] text-[var(--lw-text)] font-bold py-3 px-6 rounded hover:bg-[var(--lw-accent-3)] transition text-center" %>
     </div>
   </div>
 </section> 

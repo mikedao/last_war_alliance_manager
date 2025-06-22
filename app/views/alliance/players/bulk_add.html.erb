@@ -11,7 +11,7 @@
       <p class="mb-6"><strong>Existing players:</strong> If a username already exists, the player will be updated with the new data.</p>
     </div>
 
-    <%= form_with url: bulk_create_alliance_players_path(@alliance), method: :post, class: "space-y-6" do |form| %>
+    <%= form_with url: bulk_create_players_path, method: :post, class: "space-y-6" do |form| %>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
           <%= form.label :usernames, 'Usernames (one per line)', class: "block text-[var(--lw-text)] font-semibold mb-2" %>
@@ -40,7 +40,7 @@
 
       <div class="flex gap-4 pt-4">
         <%= form.submit 'Bulk Create Players', class: "flex-1 bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold py-3 px-6 rounded hover:bg-[var(--lw-accent)] transition" %>
-        <%= link_to 'Cancel', alliance_players_path(@alliance), class: "flex-1 bg-[var(--lw-accent-4)] text-[var(--lw-text)] font-bold py-3 px-6 rounded hover:bg-[var(--lw-accent-3)] transition text-center" %>
+        <%= link_to 'Cancel', players_path, class: "flex-1 bg-[var(--lw-accent-4)] text-[var(--lw-text)] font-bold py-3 px-6 rounded hover:bg-[var(--lw-accent-3)] transition text-center" %>
       </div>
     <% end %>
   </div>

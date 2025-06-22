@@ -4,8 +4,5 @@
         class: "w-16 px-2 py-1 border border-[var(--lw-accent-3)] rounded bg-[var(--lw-bg)] text-[var(--lw-text)] focus:outline-none focus:border-[var(--lw-accent-2)] text-center no-spinner",
         onblur: "this.form.requestSubmit()",
         data: { "goal-editor-target": "input", duel_day_id: duel_day.id } %>
-    <div class="flex items-center ml-2">
-      <%= link_to "Cancel", cancel_edit_goal_alliance_duel_duel_day_path(alliance_duel_start_date: duel_day.alliance_duel.start_date, id: duel_day.id), class: "text-gray-500 hover:text-gray-300 text-xs" %>
-    </div>
   </div>
 <% end %> 

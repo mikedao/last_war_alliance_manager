@@ -1,8 +1,8 @@
 <div class="mb-6">
   <div class="flex gap-2">
-    <%= link_to 'All Players', alliance_players_path(@alliance), class: "px-4 py-2 rounded #{params[:filter].blank? ? 'bg-[var(--lw-accent-2)] text-[var(--lw-bg)]' : 'bg-[var(--lw-accent-4)] text-[var(--lw-text)]'} transition", data: { turbo_frame: 'players_list' } %>
-    <%= link_to 'Active Only', alliance_players_path(@alliance, filter: 'active'), class: "px-4 py-2 rounded #{params[:filter] == 'active' ? 'bg-[var(--lw-accent-2)] text-[var(--lw-bg)]' : 'bg-[var(--lw-accent-4)] text-[var(--lw-text)]'} transition", data: { turbo_frame: 'players_list' } %>
-    <%= link_to 'Inactive Only', alliance_players_path(@alliance, filter: 'inactive'), class: "px-4 py-2 rounded #{params[:filter] == 'inactive' ? 'bg-[var(--lw-accent-2)] text-[var(--lw-bg)]' : 'bg-[var(--lw-accent-4)] text-[var(--lw-text)]'} transition", data: { turbo_frame: 'players_list' } %>
+    <%= link_to 'All Players', players_path, class: "px-4 py-2 rounded #{params[:filter].blank? ? 'bg-[var(--lw-accent-2)] text-[var(--lw-bg)]' : 'bg-[var(--lw-accent-4)] text-[var(--lw-text)]'} transition", data: { turbo_frame: 'players_list' } %>
+    <%= link_to 'Active Only', players_path(filter: 'active'), class: "px-4 py-2 rounded #{params[:filter] == 'active' ? 'bg-[var(--lw-accent-2)] text-[var(--lw-bg)]' : 'bg-[var(--lw-accent-4)] text-[var(--lw-text)]'} transition", data: { turbo_frame: 'players_list' } %>
+    <%= link_to 'Inactive Only', players_path(filter: 'inactive'), class: "px-4 py-2 rounded #{params[:filter] == 'inactive' ? 'bg-[var(--lw-accent-2)] text-[var(--lw-bg)]' : 'bg-[var(--lw-accent-4)] text-[var(--lw-text)]'} transition", data: { turbo_frame: 'players_list' } %>
   </div>
 </div>
 

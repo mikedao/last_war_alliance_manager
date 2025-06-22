@@ -46,7 +46,7 @@
             <td class="text-left py-3 px-4 sticky left-0 bg-[var(--lw-surface)] font-semibold truncate max-w-32" title="<%= player.username %>"><%= player.username %></td>
             <% @duel_days.each_with_index do |day, day_index| %>
               <td class="py-3 px-4">
-                <% if current_user.alliance_admin? %>
+                <% if current_user.alliance_admin? || current_user.alliance_manager? %>
                   <%= turbo_frame_tag dom_id(day, "player_#{player.id}_score") do %>
                     <%= render 'alliance/alliance_duels/score_input', player: player, day: day, day_index: day_index, players: @players %>
                   <% end %>
@@ -112,7 +112,7 @@ function saveScore(input) {
   console.log('CSRF token:', csrfToken);
   
   // Send the data to the server
-  fetch('/dashboard/alliance_duels/<%= @alliance_duel.start_date %>/scores', {
+  fetch('/dashboard/alliance_duels/<%= @alliance_duel.id %>/scores', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

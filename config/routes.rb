@@ -22,7 +22,10 @@ Rails.application.routes.draw do
 
   get "profile", to: "users#show", as: :profile
 
-  resources :alliances, only: [ :new, :create ] do
+  resources :alliances, only: [ :new, :create ]
+  get "dashboard", to: "alliances#show", as: :dashboard
+
+  scope "/dashboard" do
     resources :players, only: [ :index, :new, :create, :edit, :update, :destroy ], controller: "alliance/players" do
       member do
         patch :toggle_active
@@ -36,20 +39,10 @@ Rails.application.routes.draw do
         get :bulk_results
       end
     end
-  end
-  get "dashboard", to: "alliances#show", as: :dashboard
 
-  scope "/dashboard" do
-    get "/alliance_duels", to: "alliance/alliance_duels#index", as: :alliance_duels
-    get "/alliance_duels/new", to: "alliance/alliance_duels#new", as: :new_alliance_duel
-    post "/alliance_duels", to: "alliance/alliance_duels#create"
-
-    # Custom route for the parent resource using start_date
-    scope "/alliance_duels/:alliance_duel_start_date" do
-      get "", to: "alliance/alliance_duels#show", as: :alliance_duel
-
+    resources :alliance_duels, only: [ :index, :new, :create, :show, :destroy ], controller: "alliance/alliance_duels" do
       # Nested routes for duel_days
-      resources :duel_days, only: [ :update ], controller: "alliance/duel_days", as: "alliance_duel_duel_days" do
+      resources :duel_days, only: [ :update ], controller: "alliance/duel_days" do
         member do
           get :edit_goal
           get :cancel_edit_goal
@@ -60,7 +53,5 @@ Rails.application.routes.draw do
       # Route for updating scores
       post "scores", to: "alliance/alliance_duels#update_score"
     end
-
-    delete "/alliance_duels/:id", to: "alliance/alliance_duels#destroy", as: :delete_alliance_duel
   end
 end
