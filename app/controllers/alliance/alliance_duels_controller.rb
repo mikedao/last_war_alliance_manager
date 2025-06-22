@@ -20,6 +20,21 @@ class Alliance::AllianceDuelsController < ApplicationController
     end
   end
 
+  def destroy
+    @alliance_duel = @alliance.alliance_duels.find(params[:id])
+    @alliance_duel.destroy
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.remove("duel_row_#{@alliance_duel.id}"),
+          turbo_stream.update("flash", partial: "shared/flash", locals: { message: "Duel deleted successfully.", type: "notice" })
+        ]
+      end
+      format.html { redirect_to alliance_duels_path, notice: 'Duel deleted successfully.' }
+    end
+  end
+
   private
 
   def set_alliance

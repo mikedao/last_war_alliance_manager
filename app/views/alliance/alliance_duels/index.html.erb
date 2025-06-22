@@ -1,5 +1,7 @@
 <section class="flex justify-center items-center min-h-[60vh]">
   <div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl px-6 sm:px-10 py-8 sm:py-12 max-w-5xl w-full mx-4">
+    <div id="flash"></div>
+    
     <div class="flex justify-between items-center mb-6">
       <h1 class="font-bold text-3xl text-[var(--lw-accent-2)]">Alliance Duels</h1>
       <%= link_to 'Create New Duel', new_alliance_duel_path, class: "inline-block rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-6 py-3 hover:bg-[var(--lw-accent)] transition" %>
@@ -15,9 +17,13 @@
         </thead>
         <tbody>
           <% @alliance_duels.each do |duel| %>
-            <tr class="border-b border-[var(--lw-accent-3)]">
+            <tr class="border-b border-[var(--lw-accent-3)]" id="duel_row_<%= duel.id %>">
               <td class="py-3 px-4"><%= duel.start_date.strftime('%A, %B %d, %Y') %></td>
-              <td class="py-3 px-4"></td>
+              <td class="py-3 px-4">
+                <div class="flex gap-2">
+                  <%= button_to 'Delete', alliance_duel_path(duel), method: :delete, class: "text-red-400 hover:text-red-300 bg-transparent border-none p-0", form: { style: 'display: inline;', data: { turbo: true } } %>
+                </div>
+              </td>
             </tr>
           <% end %>
         </tbody>

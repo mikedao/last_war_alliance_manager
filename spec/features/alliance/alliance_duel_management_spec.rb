@@ -75,4 +75,21 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       end
     end
   end
+
+  describe 'deleting a duel' do
+    it 'allows an alliance admin to delete a duel from the index page' do
+      duel = create(:alliance_duel, alliance: user.alliance, start_date: Date.today)
+      visit alliance_duels_path
+
+      within('table') do
+        expect(page).to have_selector('td', text: Date.today.strftime('%A, %B %d, %Y'))
+        click_on 'Delete'
+      end
+
+      # Verify the row is removed via Hotwire without page reload
+      expect(page).to have_content('Duel deleted successfully.')
+      expect(page).not_to have_selector('td', text: Date.today.strftime('%A, %B %d, %Y'))
+      expect(page).to have_current_path(alliance_duels_path)
+    end
+  end
 end 
