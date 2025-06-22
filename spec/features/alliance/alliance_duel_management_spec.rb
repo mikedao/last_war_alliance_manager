@@ -202,6 +202,11 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     let!(:day_one) { duel.duel_days.find_by(day_number: 1) }
 
     before do
+      # Log in as the test user
+      visit login_path
+      fill_in 'Username', with: user.username
+      fill_in 'Password', with: 'password123'
+      click_on 'Log In'
       # Set a unique initial goal to avoid ambiguous matches later
       day_one.update!(score_goal: 1111.0)
       visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
@@ -239,10 +244,18 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     let!(:day_one) { duel.duel_days.find_by(day_number: 1) }
 
     before do
+      # Log in as the test user
+      visit login_path
+      fill_in 'Username', with: user.username
+      fill_in 'Password', with: 'password123'
+      click_on 'Log In'
       visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
     end
 
     it 'allows alliance admins to lock and unlock days' do
+      # Wait for the lock button frame to be present
+      expect(page).to have_selector("turbo-frame#lock_button_duel_day_#{day_one.id}", wait: 10)
+      
       within("turbo-frame#lock_button_duel_day_#{day_one.id}") do
         expect(page).to have_button('Lock')
         click_button 'Lock'
@@ -308,10 +321,19 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     let!(:day_two) { duel.duel_days.find_by(day_number: 2) }
 
     before do
+      # Log in as the test user
+      visit login_path
+      fill_in 'Username', with: user.username
+      fill_in 'Password', with: 'password123'
+      click_on 'Log In'
       visit alliance_duel_path(alliance_duel_start_date: duel.start_date)
     end
 
     it 'allows alliance admins to edit player scores' do
+      # Wait for the page to fully load and ensure players are present
+      expect(page).to have_content('PlayerOneUnique', wait: 10)
+      expect(page).to have_content('PlayerTwoUnique', wait: 10)
+      
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
@@ -328,12 +350,17 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'manually triggers the save function' do
+      # Wait for the page to fully load and ensure players are present
+      expect(page).to have_content('PlayerOneUnique', wait: 10)
+      expect(page).to have_content('PlayerTwoUnique', wait: 10)
+      
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
 
       within(player_row) do
         input = first('input[type="text"]')
+        expect(input).to be_present
         input.set('3.5')
 
         # Manually trigger the save function
@@ -349,11 +376,16 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'allows entering NA as a score' do
+      # Wait for the page to fully load and ensure players are present
+      expect(page).to have_content('PlayerOneUnique', wait: 10)
+      expect(page).to have_content('PlayerTwoUnique', wait: 10)
+      
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
       within(player_row) do
         input = first('input[type="text"]')
+        expect(input).to be_present
         input.set('NA')
         page.execute_script('arguments[0].blur()', input.native)
         sleep 1
@@ -365,11 +397,16 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'updates totals automatically when scores are saved' do
+      # Wait for the page to fully load and ensure players are present
+      expect(page).to have_content('PlayerOneUnique', wait: 10)
+      expect(page).to have_content('PlayerTwoUnique', wait: 10)
+      
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
       within(player_row) do
         inputs = all('input[type="text"]')
+        expect(inputs.length).to be >= 2
         inputs[0].set('3.5')
         page.execute_script('arguments[0].blur()', inputs[0].native)
         expect(page).to have_selector('td[data-total-score="true"]', text: '3.5', wait: 5)
@@ -382,11 +419,16 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'treats NA as zero in total calculations' do
+      # Wait for the page to fully load and ensure players are present
+      expect(page).to have_content('PlayerOneUnique', wait: 10)
+      expect(page).to have_content('PlayerTwoUnique', wait: 10)
+      
       # Wait for the player row to be present before proceeding
       expect(page).to have_selector("tr[data-player-id='#{player1.id}']", wait: 10)
       player_row = find("tr[data-player-id='#{player1.id}']")
       within(player_row) do
         inputs = all('input[type="text"]')
+        expect(inputs.length).to be >= 2
         inputs[0].set('3.5')
         page.execute_script('arguments[0].blur()', inputs[0].native)
         expect(page).to have_selector('td[data-total-score="true"]', text: '3.5', wait: 5)
@@ -399,7 +441,12 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     end
 
     it 'disables score fields when day is locked' do
+      # Wait for the page to fully load and ensure players are present
+      expect(page).to have_content('PlayerOneUnique', wait: 10)
+      expect(page).to have_content('PlayerTwoUnique', wait: 10)
+      
       # Find and click the first lock button (day one)
+      expect(page).to have_selector("turbo-frame#lock_button_duel_day_#{day_one.id}", wait: 10)
       within("turbo-frame#lock_button_duel_day_#{day_one.id}") do
         lock_button = find('button', text: 'Lock')
         lock_button.click
