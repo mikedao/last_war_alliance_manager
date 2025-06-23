@@ -2,6 +2,19 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
+  // This safelist ensures that common spacing classes are never removed.
+  safelist: [
+    {
+      pattern: /^(m|p|gap|space)-(x|y)-[0-9]+$/,
+    },
+    {
+      pattern: /^(m|p|gap|space)-[0-9]+$/,
+    },
+    {
+      pattern: /^(w|h)-[0-9]+$/,
+    },
+  ],
+
   content: [
     './public/*.html',
     './app/helpers/**/*.rb',
