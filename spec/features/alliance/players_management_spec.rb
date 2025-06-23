@@ -15,7 +15,7 @@ RSpec.feature 'Alliance Players Management', type: :feature do
     it 'navigates to the players index when Manage Players is clicked' do
       visit dashboard_path
       click_on 'Manage Players'
-      
+
       expect(page).to have_current_path(players_path)
       expect(page).to have_content('Players in Your Alliance')
     end
@@ -23,9 +23,9 @@ RSpec.feature 'Alliance Players Management', type: :feature do
     it 'shows all players in the current user\'s alliance by default' do
       create(:player, alliance: alliance, username: 'obscureactiveplayer', active: true)
       create(:player, alliance: alliance, username: 'inactiveplayer', active: false)
-      
+
       visit players_path
-      
+
       expect(page).to have_content('obscureactiveplayer')
       expect(page).to have_content('inactiveplayer')
     end
@@ -36,25 +36,25 @@ RSpec.feature 'Alliance Players Management', type: :feature do
       create(:player, alliance: alliance, username: 'alpha')
       create(:player, alliance: alliance, username: 'obscureactiveplayer', active: true)
       create(:player, alliance: alliance, username: 'inactiveplayer', active: false)
-      
+
       visit players_path
-      
+
       player_names = page.all('tbody tr').map { |row| row.find('td:first-child').text.strip }
-      expected_order = ['alpha', 'Bravo', 'charlie', 'inactiveplayer', 'obscureactiveplayer']
-      
+      expected_order = [ 'alpha', 'Bravo', 'charlie', 'inactiveplayer', 'obscureactiveplayer' ]
+
       expect(player_names).to eq(expected_order)
     end
 
     it 'can filter to show only active players' do
       create(:player, alliance: alliance, username: 'obscureactiveplayer', active: true)
       create(:player, alliance: alliance, username: 'inactiveplayer', active: false)
-      
+
       visit players_path
       click_on 'Active Only'
-      
+
       expect(page).to have_content('obscureactiveplayer')
       expect(page).not_to have_content('inactiveplayer')
-      
+
       # Check that the filter is active
       expect(page).to have_content('Active Only')
     end
@@ -62,28 +62,28 @@ RSpec.feature 'Alliance Players Management', type: :feature do
     it 'can filter to show only inactive players' do
       create(:player, alliance: alliance, username: 'obscureactiveplayer', active: true)
       create(:player, alliance: alliance, username: 'inactiveplayer', active: false)
-      
+
       visit players_path
       click_on 'Inactive Only'
-      
+
       expect(page).to have_content('inactiveplayer')
       expect(page).not_to have_content('obscureactiveplayer')
-      
+
       # Check that the filter is active
       expect(page).to have_content('Inactive Only')
     end
 
     it 'shows a link to create a new player' do
       visit players_path
-      
+
       expect(page).to have_link('Create New Player')
     end
 
     it 'shows edit, delete, and toggle active status actions for each player' do
       create(:player, alliance: alliance, username: 'obscureactiveplayer', active: true)
-      
+
       visit players_path
-      
+
       within("tr[data-player-username='obscureactiveplayer']") do
         expect(page).to have_link('Edit')
         expect(page).to have_button('Delete')
@@ -105,7 +105,7 @@ RSpec.feature 'Alliance Players Management', type: :feature do
 
       it 'redirects to dashboard with alert when trying to access players management' do
         visit players_path
-        
+
         expect(page).to have_current_path(dashboard_path)
         expect(page).to have_content('You must be an alliance admin or manager to manage players.')
       end
@@ -125,7 +125,7 @@ RSpec.feature 'Alliance Players Management', type: :feature do
 
       it 'redirects to dashboard with alert when trying to access players management' do
         visit players_path
-        
+
         expect(page).to have_current_path(dashboard_path)
         expect(page).to have_content('You must be an alliance admin or manager to manage players.')
       end

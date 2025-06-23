@@ -15,7 +15,7 @@ RSpec.feature 'Alliance Duels Access Control', type: :feature do
 
     it 'allows alliance admin to access alliance duels index' do
       visit alliance_duels_path
-      
+
       expect(page).to have_current_path(alliance_duels_path)
       expect(page).to have_content('Alliance Duels')
       expect(page).to have_link('Create New Duel')
@@ -23,14 +23,14 @@ RSpec.feature 'Alliance Duels Access Control', type: :feature do
 
     it 'allows alliance admin to view individual alliance duel' do
       visit alliance_duel_path(alliance_duel)
-      
+
       expect(page).to have_current_path(alliance_duel_path(alliance_duel))
       expect(page).to have_content('Alliance Duel')
     end
 
     it 'allows alliance admin to create new alliance duel' do
       visit new_alliance_duel_path
-      
+
       expect(page).to have_current_path(new_alliance_duel_path)
       expect(page).to have_content('New Alliance Duel')
     end
@@ -48,7 +48,7 @@ RSpec.feature 'Alliance Duels Access Control', type: :feature do
 
     it 'allows alliance manager to access alliance duels index' do
       visit alliance_duels_path
-      
+
       expect(page).to have_current_path(alliance_duels_path)
       expect(page).to have_content('Alliance Duels')
       expect(page).to have_link('Create New Duel')
@@ -56,14 +56,14 @@ RSpec.feature 'Alliance Duels Access Control', type: :feature do
 
     it 'allows alliance manager to view individual alliance duel' do
       visit alliance_duel_path(alliance_duel)
-      
+
       expect(page).to have_current_path(alliance_duel_path(alliance_duel))
       expect(page).to have_content('Alliance Duel')
     end
 
     it 'allows alliance manager to create new alliance duel' do
       visit new_alliance_duel_path
-      
+
       expect(page).to have_current_path(new_alliance_duel_path)
       expect(page).to have_content('New Alliance Duel')
     end
@@ -82,21 +82,21 @@ RSpec.feature 'Alliance Duels Access Control', type: :feature do
 
       it 'redirects to dashboard with alert when trying to access alliance duels index' do
         visit alliance_duels_path
-        
+
         expect(page).to have_current_path(dashboard_path)
         expect(page).to have_content('You are not authorized to perform this action.')
       end
 
       it 'redirects to dashboard with alert when trying to access individual alliance duel' do
         visit alliance_duel_path(alliance_duel)
-        
+
         expect(page).to have_current_path(dashboard_path)
         expect(page).to have_content('You are not authorized to perform this action.')
       end
 
       it 'redirects to dashboard with alert when trying to create new alliance duel' do
         visit new_alliance_duel_path
-        
+
         expect(page).to have_current_path(dashboard_path)
         expect(page).to have_content('You are not authorized to perform this action.')
       end
@@ -116,21 +116,21 @@ RSpec.feature 'Alliance Duels Access Control', type: :feature do
 
       it 'redirects to dashboard with alert when trying to access alliance duels index' do
         visit alliance_duels_path
-        
+
         expect(page).to have_current_path(dashboard_path)
         expect(page).to have_content('You are not authorized to perform this action.')
       end
 
       it 'redirects to dashboard with alert when trying to access individual alliance duel' do
         visit alliance_duel_path(alliance_duel)
-        
+
         expect(page).to have_current_path(dashboard_path)
         expect(page).to have_content('You are not authorized to perform this action.')
       end
 
       it 'redirects to dashboard with alert when trying to create new alliance duel' do
         visit new_alliance_duel_path
-        
+
         expect(page).to have_current_path(dashboard_path)
         expect(page).to have_content('You are not authorized to perform this action.')
       end
@@ -151,7 +151,7 @@ RSpec.feature 'Alliance Duels Access Control', type: :feature do
 
       it 'allows access to alliance duels index (shows only their alliance duels)' do
         visit alliance_duels_path
-        
+
         expect(page).to have_current_path(alliance_duels_path)
         expect(page).to have_content('Alliance Duels')
         # Should not show duels from other alliance
@@ -160,7 +160,7 @@ RSpec.feature 'Alliance Duels Access Control', type: :feature do
 
       it 'redirects to alliance duels index when trying to access duel from different alliance' do
         visit alliance_duel_path(other_duel)
-        
+
         expect(page).to have_current_path(alliance_duels_path)
         expect(page).to have_content('Duel not found.')
       end
@@ -177,11 +177,11 @@ RSpec.feature 'Alliance Duels Access Control', type: :feature do
 
     it 'navigates to alliance duels when Manage Alliance Duels is clicked' do
       visit dashboard_path
-      
+
       click_on 'Manage Alliance Duels'
-      
+
       expect(page).to have_current_path(alliance_duels_path)
       expect(page).to have_content('Alliance Duels')
     end
   end
-end 
+end

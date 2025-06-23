@@ -2,7 +2,7 @@ class Alliance::AllianceDuelsController < ApplicationController
   before_action :require_login
   before_action :require_alliance_admin
   before_action :set_alliance
-  before_action :parse_json_params, only: [:update_score]
+  before_action :parse_json_params, only: [ :update_score ]
 
   def index
     @alliance_duels = @alliance.alliance_duels.order(start_date: :desc)
@@ -99,7 +99,7 @@ class Alliance::AllianceDuelsController < ApplicationController
   end
 
   def parse_json_params
-    if request.content_type&.include?('application/json')
+    if request.content_type&.include?("application/json")
       params.merge!(JSON.parse(request.body.read))
     end
   end

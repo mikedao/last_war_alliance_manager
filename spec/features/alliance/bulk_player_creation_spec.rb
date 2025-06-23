@@ -16,20 +16,20 @@ RSpec.feature 'Alliance Bulk Player Creation', type: :feature do
     it 'navigates to bulk add form when Bulk Add Players is clicked' do
       visit dashboard_path
       click_on 'Bulk Add Players'
-      
+
       expect(page).to have_current_path(bulk_add_players_path)
       expect(page).to have_content('Bulk Add Players')
     end
 
     it 'creates multiple players successfully' do
       visit bulk_add_players_path
-      
+
       fill_in 'Usernames (one per line)', with: "Player1\nPlayer2\nPlayer3"
       fill_in 'Ranks (one per line)', with: "R1\nR2\nR3"
       fill_in 'Levels (one per line)', with: "50\n60\n70"
-      
+
       click_on 'Bulk Create Players'
-      
+
       expect(page).to have_content('Bulk Import Results')
       expect(page).to have_content('Created: 3')
       expect(page).to have_content('Line 1: Player1')
@@ -39,18 +39,18 @@ RSpec.feature 'Alliance Bulk Player Creation', type: :feature do
 
     it 'updates existing players' do
       create(:player, alliance: alliance_with_admin, username: 'Player1', rank: 'R1', level: 50)
-      
+
       visit bulk_add_players_path
-      
+
       fill_in 'Usernames (one per line)', with: 'Player1'
       fill_in 'Ranks (one per line)', with: 'R3'
       fill_in 'Levels (one per line)', with: '75'
-      
+
       click_on 'Bulk Create Players'
-      
+
       expect(page).to have_content('Updated: 1')
       expect(page).to have_content('Line 1: Player1')
-      
+
       # Verify the player was updated
       visit players_path
       expect(page).to have_content('Player1')
@@ -60,26 +60,26 @@ RSpec.feature 'Alliance Bulk Player Creation', type: :feature do
 
     it 'handles validation errors gracefully' do
       visit bulk_add_players_path
-      
+
       fill_in 'Usernames (one per line)', with: "Player1\nPlayer2"
       fill_in 'Ranks (one per line)', with: "R1\nINVALID"
       fill_in 'Levels (one per line)', with: "50\n60"
-      
+
       click_on 'Bulk Create Players'
-      
+
       expect(page).to have_content('Failed: 1')
       expect(page).to have_content('Rank must be R1, R2, R3, R4, or R5')
     end
 
     it 'processes only complete sets' do
       visit bulk_add_players_path
-      
+
       fill_in 'Usernames (one per line)', with: "Player1\nPlayer2\nPlayer3"
       fill_in 'Ranks (one per line)', with: "R1\nR2"
       fill_in 'Levels (one per line)', with: "50\n60\n70"
-      
+
       click_on 'Bulk Create Players'
-      
+
       expect(page).to have_content('Created: 2')
       expect(page).to have_content('Line 1: Player1')
       expect(page).to have_content('Line 2: Player2')
@@ -88,13 +88,13 @@ RSpec.feature 'Alliance Bulk Player Creation', type: :feature do
 
     it 'handles empty input gracefully' do
       visit bulk_add_players_path
-      
+
       fill_in 'Usernames (one per line)', with: ''
       fill_in 'Ranks (one per line)', with: ''
       fill_in 'Levels (one per line)', with: ''
-      
+
       click_on 'Bulk Create Players'
-      
+
       expect(page).to have_content('Created: 0')
       expect(page).to have_content('Updated: 0')
       expect(page).to have_content('Failed: 0')
@@ -102,23 +102,23 @@ RSpec.feature 'Alliance Bulk Player Creation', type: :feature do
 
     it 'provides navigation back to players list' do
       visit bulk_add_players_path
-      
+
       click_on 'Cancel'
-      
+
       expect(page).to have_current_path(players_path)
     end
 
     it 'provides navigation from results page' do
       visit bulk_add_players_path
-      
+
       fill_in 'Usernames (one per line)', with: 'Player1'
       fill_in 'Ranks (one per line)', with: 'R1'
       fill_in 'Levels (one per line)', with: '50'
-      
+
       click_on 'Bulk Create Players'
-      
+
       click_on 'View All Players'
-      
+
       expect(page).to have_current_path(players_path)
     end
   end
@@ -136,7 +136,7 @@ RSpec.feature 'Alliance Bulk Player Creation', type: :feature do
 
       it 'redirects to dashboard with alert' do
         visit bulk_add_players_path
-        
+
         expect(page).to have_current_path(dashboard_path)
         expect(page).to have_content('You must be an alliance admin or manager to manage players.')
       end
@@ -156,7 +156,7 @@ RSpec.feature 'Alliance Bulk Player Creation', type: :feature do
 
       it 'redirects to dashboard with alert' do
         visit bulk_add_players_path
-        
+
         expect(page).to have_current_path(dashboard_path)
         expect(page).to have_content('You must be an alliance admin or manager to manage players.')
       end

@@ -14,12 +14,12 @@ RSpec.feature 'Inline Player Notes Editing', type: :feature do
 
   it 'allows inline editing by clicking on the notes text' do
     visit players_path
-    
+
     # Click on the notes text to start editing
     within("tr[data-player-username='TestPlayer']") do
       click_on 'Initial notes'
     end
-    
+
     # Should show the edit form
     expect(page).to have_field('player[notes]', with: 'Initial notes')
     expect(page).to have_button('Save')
@@ -28,15 +28,15 @@ RSpec.feature 'Inline Player Notes Editing', type: :feature do
 
   it 'allows cancelling an edit' do
     visit players_path
-    
+
     # Click on the notes text to start editing
     within("tr[data-player-username='TestPlayer']") do
       click_on 'Initial notes'
     end
-    
+
     # Cancel the edit
     click_on 'Cancel'
-    
+
     # Should be back to the display view
     expect(page).to have_content('Initial notes')
     expect(page).not_to have_field('player[notes]')

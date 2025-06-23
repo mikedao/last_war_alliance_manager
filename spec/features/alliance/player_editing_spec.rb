@@ -15,7 +15,7 @@ RSpec.feature 'Player Editing', type: :feature do
 
     it 'allows alliance admin to access edit page for players in their alliance' do
       visit edit_player_path(player)
-      
+
       expect(page).to have_current_path(edit_player_path(player))
       expect(page).to have_content('Edit Player')
       expect(page).to have_content('Update player information for TestPlayer')
@@ -23,7 +23,7 @@ RSpec.feature 'Player Editing', type: :feature do
 
     it 'shows the edit form with current player data' do
       visit edit_player_path(player)
-      
+
       expect(page).to have_field('Username', with: 'TestPlayer')
       expect(page).to have_select('Rank', selected: 'R3')
       expect(page).to have_field('Level', with: '75')
@@ -32,17 +32,17 @@ RSpec.feature 'Player Editing', type: :feature do
 
     it 'allows alliance admin to update player information' do
       visit edit_player_path(player)
-      
+
       fill_in 'Username', with: 'UpdatedPlayer'
       select 'R4', from: 'Rank'
       fill_in 'Level', with: '85'
       fill_in 'Notes', with: 'Updated notes'
-      
+
       click_on 'Update Player'
-      
+
       expect(page).to have_current_path(players_path)
       expect(page).to have_content('Player updated successfully!')
-      
+
       # Verify the changes were saved
       expect(page).to have_content('UpdatedPlayer')
       expect(page).to have_content('R4')
@@ -52,12 +52,12 @@ RSpec.feature 'Player Editing', type: :feature do
 
     it 'shows validation errors for invalid data' do
       visit edit_player_path(player)
-      
+
       fill_in 'Username', with: ''
       fill_in 'Level', with: '150'
-      
+
       click_on 'Update Player'
-      
+
       expect(page).to have_content('Please fix the following errors:')
       expect(page).to have_content("Username can't be blank")
       expect(page).to have_content('Level must be less than or equal to 100')
@@ -65,34 +65,34 @@ RSpec.feature 'Player Editing', type: :feature do
 
     it 'prevents duplicate usernames within the same alliance' do
       create(:player, alliance: alliance, username: 'ExistingPlayer')
-      
+
       visit edit_player_path(player)
-      
+
       fill_in 'Username', with: 'ExistingPlayer'
-      
+
       click_on 'Update Player'
-      
+
       expect(page).to have_content('Username has already been taken')
     end
 
     it 'allows same username in different alliances' do
       other_alliance = create(:alliance, tag: 'OTHR')
       create(:player, alliance: other_alliance, username: 'SharedName')
-      
+
       visit edit_player_path(player)
-      
+
       fill_in 'Username', with: 'SharedName'
-      
+
       click_on 'Update Player'
-      
+
       expect(page).to have_content('Player updated successfully!')
     end
 
     it 'provides navigation back to players list' do
       visit edit_player_path(player)
-      
+
       click_on 'Cancel'
-      
+
       expect(page).to have_current_path(players_path)
     end
   end
@@ -109,7 +109,7 @@ RSpec.feature 'Player Editing', type: :feature do
 
     it 'allows alliance manager to access edit page for players in their alliance' do
       visit edit_player_path(player)
-      
+
       expect(page).to have_current_path(edit_player_path(player))
       expect(page).to have_content('Edit Player')
       expect(page).to have_content('Update player information for TestPlayer')
@@ -117,17 +117,17 @@ RSpec.feature 'Player Editing', type: :feature do
 
     it 'allows alliance manager to update player information' do
       visit edit_player_path(player)
-      
+
       fill_in 'Username', with: 'ManagerUpdatedPlayer'
       select 'R5', from: 'Rank'
       fill_in 'Level', with: '95'
       fill_in 'Notes', with: 'Updated by manager'
-      
+
       click_on 'Update Player'
-      
+
       expect(page).to have_current_path(players_path)
       expect(page).to have_content('Player updated successfully!')
-      
+
       # Verify the changes were saved
       expect(page).to have_content('ManagerUpdatedPlayer')
       expect(page).to have_content('R5')
@@ -149,7 +149,7 @@ RSpec.feature 'Player Editing', type: :feature do
 
       it 'redirects to dashboard with alert when trying to access edit page' do
         visit edit_player_path(player)
-        
+
         expect(page).to have_current_path(dashboard_path)
         expect(page).to have_content('You must be an alliance admin or manager to manage players.')
       end
@@ -169,7 +169,7 @@ RSpec.feature 'Player Editing', type: :feature do
 
       it 'redirects to dashboard with alert when trying to access edit page' do
         visit edit_player_path(player)
-        
+
         expect(page).to have_current_path(dashboard_path)
         expect(page).to have_content('You must be an alliance admin or manager to manage players.')
       end
@@ -190,7 +190,7 @@ RSpec.feature 'Player Editing', type: :feature do
 
       it 'redirects to dashboard with alert when trying to access player from different alliance' do
         visit edit_player_path(other_player)
-        
+
         expect(page).to have_current_path(dashboard_path)
         expect(page).to have_content('Player not found or you don\'t have permission to access it.')
       end
@@ -207,13 +207,13 @@ RSpec.feature 'Player Editing', type: :feature do
 
     it 'navigates to edit page when Edit link is clicked' do
       visit players_path
-      
+
       within("tr[data-player-username='TestPlayer']") do
         click_on 'Edit'
       end
-      
+
       expect(page).to have_current_path(edit_player_path(player))
       expect(page).to have_content('Edit Player')
     end
   end
-end 
+end

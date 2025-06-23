@@ -140,11 +140,11 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     it 'navigates to the duel details page with an ID-based URL' do
       duel = create(:alliance_duel, alliance: user.alliance, start_date: Date.today)
       visit alliance_duels_path
-      
+
       within("tr", text: Date.today.strftime('%A, %B %d, %Y')) do
         click_on 'View Details'
       end
-      
+
       expect(page).to have_current_path(alliance_duel_path(duel))
       expect(page).to have_content('Alliance Duel')
     end
@@ -462,7 +462,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
     let!(:duel) { create(:alliance_duel, alliance: user.alliance, start_date: duel_date) }
     let!(:day) { duel.duel_days.find_by(day_number: 1) }
     let!(:player) { create(:player, alliance: user.alliance, username: 'TestPlayer') }
-    
+
     before do
       # Update the day to have the test values
       day.update!(name: 'DAY 1', score_goal: 100, locked: false)
@@ -481,7 +481,7 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       within("turbo-frame#lock_button_duel_day_#{day.id}") do
         click_on 'Lock'
       end
-      
+
       # Should see the player but score field should be disabled
       expect(page).to have_content('DAY 1')
       expect(page).to have_selector('input[type="text"][disabled]')
@@ -489,14 +489,14 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
 
     it 'allows deleting alliance duels' do
       visit alliance_duels_path
-      
+
       expect(page).to have_content(duel.start_date.strftime('%A, %B %d, %Y'))
-      
+
       # Delete the duel
       within("tr", text: duel.start_date.strftime('%A, %B %d, %Y')) do
         click_on 'Delete'
       end
-      
+
       expect(page).to have_content('Duel deleted successfully.')
       expect(page).not_to have_content(duel.start_date.strftime('%A, %B %d, %Y'))
     end
@@ -506,22 +506,22 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
       duel.duel_days.find_by(day_number: 1).update!(name: 'DAY 1')
       duel.duel_days.find_by(day_number: 2).update!(name: 'DAY 2')
       duel.duel_days.find_by(day_number: 3).update!(name: 'DAY 3')
-      
+
       visit alliance_duel_path(duel)
-      
+
       # Should show days in order in the table header
       expect(page).to have_content('DAY 1')
       expect(page).to have_content('DAY 2')
       expect(page).to have_content('DAY 3')
-      
+
       # Check the order in the table header - extract just the day names for first 3 days
       day_names = page.all('thead th').map { |th| th.text.strip }.select { |text| text.include?('DAY') }.first(3).map { |text| text.split(' ').first + ' ' + text.split(' ')[1] }
-      expect(day_names).to eq(['DAY 1', 'DAY 2', 'DAY 3'])
+      expect(day_names).to eq([ 'DAY 1', 'DAY 2', 'DAY 3' ])
     end
 
     it 'handles missing duel gracefully' do
       visit alliance_duel_path(id: 99999)
-      
+
       expect(page).to have_current_path(alliance_duels_path)
       expect(page).to have_content('Duel not found.')
     end
