@@ -21,7 +21,7 @@ class Alliance::DuelDaysController < ApplicationController
             locals: { duel_day: @duel_day }
           )
         end
-        format.html { redirect_to alliance_duel_path(alliance_duel_start_date: @alliance_duel.start_date) }
+        format.html { redirect_to alliance_duel_path(@alliance_duel) }
       end
     else
       # Handle errors if necessary, for now, re-render the form
@@ -35,6 +35,7 @@ class Alliance::DuelDaysController < ApplicationController
 
   def toggle_lock
     @duel_day.update!(locked: !@duel_day.locked)
+    @duel_day.reload  # Reload to ensure the locked state is current
 
     respond_to do |format|
       format.turbo_stream do
@@ -54,8 +55,10 @@ class Alliance::DuelDaysController < ApplicationController
 
         # Update all input fields for this day
         input_streams = @alliance_duel.alliance.players.map do |player|
-          turbo_stream.replace(
-            dom_id(@duel_day, "player_#{player.id}_score"),
+          frame_id = dom_id(@duel_day, "player_#{player.id}_score")
+          Rails.logger.info "Updating frame: #{frame_id}, locked: #{@duel_day.locked?}"
+          turbo_stream.update(
+            frame_id,
             partial: "alliance/alliance_duels/score_input",
             locals: {
               player: player,
@@ -68,7 +71,7 @@ class Alliance::DuelDaysController < ApplicationController
 
         render turbo_stream: [ lock_button_stream, goal_stream ] + input_streams
       end
-      format.html { redirect_to alliance_duel_path(alliance_duel_start_date: @alliance_duel.start_date) }
+      format.html { redirect_to alliance_duel_path(@alliance_duel) }
     end
   end
 
@@ -85,7 +88,7 @@ class Alliance::DuelDaysController < ApplicationController
   end
 
   def set_alliance_duel
-    @alliance_duel = @alliance.alliance_duels.find_by!(start_date: params[:alliance_duel_start_date])
+    @alliance_duel = @alliance.alliance_duels.find(params[:alliance_duel_id])
   end
 
   def set_duel_day

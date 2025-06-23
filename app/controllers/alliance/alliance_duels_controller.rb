@@ -2,6 +2,7 @@ class Alliance::AllianceDuelsController < ApplicationController
   before_action :require_login
   before_action :require_alliance_admin
   before_action :set_alliance
+  before_action :parse_json_params, only: [ :update_score ]
 
   def index
     @alliance_duels = @alliance.alliance_duels.order(start_date: :desc)
@@ -36,19 +37,16 @@ class Alliance::AllianceDuelsController < ApplicationController
   end
 
   def show
-    @alliance_duel = @alliance.alliance_duels.includes(:duel_days).find_by(start_date: params[:alliance_duel_start_date])
-
-    if @alliance_duel.nil?
-      redirect_to alliance_duels_path, alert: "Duel not found."
-      return
-    end
+    @alliance_duel = @alliance.alliance_duels.includes(:duel_days).find(params[:id])
 
     @duel_days = @alliance_duel.duel_days.order(:day_number)
     @players = @alliance.players.order(Arel.sql("LOWER(username)"))
+  rescue ActiveRecord::RecordNotFound
+    redirect_to alliance_duels_path, alert: "Duel not found."
   end
 
   def update_score
-    @alliance_duel = @alliance.alliance_duels.find_by(start_date: params[:alliance_duel_start_date])
+    @alliance_duel = @alliance.alliance_duels.find(params[:alliance_duel_id])
 
     if @alliance_duel.nil?
       render json: { success: false, error: "Duel not found" }, status: :not_found
@@ -95,8 +93,14 @@ class Alliance::AllianceDuelsController < ApplicationController
   end
 
   def require_alliance_admin
-    unless current_user.alliance_admin?
+    unless current_user.alliance_admin? || current_user.alliance_manager?
       redirect_to dashboard_path, alert: "You are not authorized to perform this action."
+    end
+  end
+
+  def parse_json_params
+    if request.content_type&.include?("application/json")
+      params.merge!(JSON.parse(request.body.read))
     end
   end
 

@@ -25,7 +25,7 @@ class Alliance::PlayersController < ApplicationController
     @player = @alliance.players.build(player_params)
 
     if @player.save
-      redirect_to new_alliance_player_path(@alliance), notice: "Player created successfully!"
+      redirect_to new_player_path, notice: "Player created successfully!"
     else
       render :new, status: :unprocessable_entity
     end
@@ -80,18 +80,25 @@ class Alliance::PlayersController < ApplicationController
     # Store results in cache to avoid cookie overflow
     cache_key = "bulk_import_results_#{current_user.id}_#{SecureRandom.uuid}"
     Rails.cache.write(cache_key, @results, expires_in: 5.minutes)
-    redirect_to bulk_results_alliance_players_path(@alliance, cache_key: cache_key)
+    redirect_to bulk_results_players_path(cache_key: cache_key)
   end
 
   def bulk_results
     @results = Rails.cache.read(params[:cache_key])
-    redirect_to alliance_players_path(@alliance), alert: "No bulk import results to display." if @results.blank?
+    redirect_to players_path, alert: "No bulk import results to display." if @results.blank?
   end
 
   def edit
+    # Authorization is already handled by require_alliance_admin and set_player
+    # set_player ensures the player belongs to the current user's alliance
   end
 
   def update
+    if @player.update(player_params)
+      redirect_to players_path, notice: "Player updated successfully!"
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   def edit_notes
@@ -109,11 +116,11 @@ class Alliance::PlayersController < ApplicationController
             locals: { player: @player, alliance: @alliance }
           )
         end
-        format.html { redirect_to alliance_players_path(@alliance) }
+        format.html { redirect_to players_path }
       end
     else
       # Handle validation errors if necessary
-      redirect_to alliance_players_path(@alliance), alert: "Notes could not be updated."
+      redirect_to players_path, alert: "Notes could not be updated."
     end
   end
 
@@ -131,7 +138,7 @@ class Alliance::PlayersController < ApplicationController
           turbo_stream.update("flash", partial: "shared/flash", locals: { message: "Player deleted successfully!", type: "notice" })
         ]
       end
-      format.html { redirect_to alliance_players_path(@alliance), notice: "Player deleted successfully!" }
+      format.html { redirect_to players_path, notice: "Player deleted successfully!" }
     end
   end
 
@@ -146,7 +153,7 @@ class Alliance::PlayersController < ApplicationController
           locals: { player: @player, alliance: @alliance }
         )
       end
-      format.html { redirect_to alliance_players_path(@alliance) }
+      format.html { redirect_to players_path }
     end
   end
 
@@ -161,11 +168,13 @@ class Alliance::PlayersController < ApplicationController
 
   def set_player
     @player = @alliance.players.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to dashboard_path, alert: "Player not found or you don't have permission to access it."
   end
 
   def require_alliance_admin
-    unless current_user.alliance_admin?
-      redirect_to dashboard_path, alert: "You must be an alliance admin to manage players."
+    unless current_user.alliance_admin? || current_user.alliance_manager?
+      redirect_to dashboard_path, alert: "You must be an alliance admin or manager to manage players."
     end
   end
 

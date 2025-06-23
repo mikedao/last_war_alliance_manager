@@ -1,4 +1,47 @@
-<div>
-  <h1 class="font-bold text-4xl">Alliance::Players#edit</h1>
-  <p>Find me in app/views/alliance/players/edit.html.erb</p>
+<div class="bg-[var(--lw-surface)] border-2 border-[var(--lw-accent-3)] rounded-2xl shadow-xl p-10 max-w-2xl mx-auto mt-10">
+  <div class="mb-6">
+    <h1 class="font-bold text-3xl text-[var(--lw-accent-2)]">Edit Player</h1>
+    <p class="text-gray-600 mt-2">Update player information for <span class="font-semibold text-[var(--lw-accent-2)]"><%= @player.username %></span></p>
+  </div>
+
+  <%= form_with model: @player, url: player_path(@player), method: :patch, class: "space-y-6" do |form| %>
+    <% if @player.errors.any? %>
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+        <h2 class="font-semibold">Please fix the following errors:</h2>
+        <ul class="list-disc list-inside mt-2">
+          <% @player.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :username, class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.text_field :username, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--lw-accent-2)] focus:border-[var(--lw-accent-2)] bg-[var(--lw-bg)] text-[var(--lw-text)]" %>
+    </div>
+
+    <div>
+      <%= form.label :rank, class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.select :rank, 
+          options_for_select([['R1', 'R1'], ['R2', 'R2'], ['R3', 'R3'], ['R4', 'R4'], ['R5', 'R5']], @player.rank),
+          {},
+          class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--lw-accent-2)] focus:border-[var(--lw-accent-2)] bg-[var(--lw-bg)] text-[var(--lw-text)]" %>
+    </div>
+
+    <div>
+      <%= form.label :level, class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.number_field :level, min: 1, max: 100, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--lw-accent-2)] focus:border-[var(--lw-accent-2)] bg-[var(--lw-bg)] text-[var(--lw-text)]" %>
+    </div>
+
+    <div>
+      <%= form.label :notes, class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.text_area :notes, rows: 3, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--lw-accent-2)] focus:border-[var(--lw-accent-2)] bg-[var(--lw-bg)] text-[var(--lw-text)]" %>
+    </div>
+
+    <div class="flex justify-end space-x-6 mt-8">
+      <%= link_to "Cancel", players_path, class: "rounded bg-[var(--lw-accent-4)] text-[var(--lw-text)] font-bold px-4 py-2 hover:bg-[var(--lw-accent-3)] transition" %>
+      <%= form.submit "Update Player", class: "rounded bg-[var(--lw-accent-2)] text-[var(--lw-bg)] font-bold px-4 py-2 hover:bg-[var(--lw-accent)] transition" %>
+    </div>
+  <% end %>
 </div>

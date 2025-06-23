@@ -25,6 +25,19 @@ alliance = Alliance.find_or_create_by!(admin: alliance_admin) do |alliance|
   alliance.server = '1023'
 end
 
+# Create an alliance manager user
+alliance_manager = User.find_or_create_by!(username: 'alliance_manager') do |user|
+  user.display_name = 'Alliance Manager'
+  user.email = 'manager@alliance.com'
+  user.password = 'password123'
+  user.password_confirmation = 'password123'
+  user.role = :alliance_manager
+  user.alliance = alliance
+end
+
+# Ensure the manager is associated with the alliance
+alliance_manager.update!(alliance: alliance) unless alliance_manager.alliance == alliance
+
 # Create players with mixed active/inactive statuses
 players_data = [
   { username: 'DragonSlayer', rank: 'R5', level: 95, active: true, notes: 'Top performer, excellent in raids' },
@@ -50,6 +63,7 @@ end
 
 puts "Seed data created successfully!"
 puts "Alliance Admin: #{alliance_admin.username} (password: password123)"
+puts "Alliance Manager: #{alliance_manager.username} (password: password123)"
 puts "Alliance: #{alliance.name} (#{alliance.tag})"
 puts "Players created: #{Player.where(alliance: alliance).count}"
 puts "Active players: #{Player.where(alliance: alliance, active: true).count}"

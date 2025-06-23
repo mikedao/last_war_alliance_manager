@@ -1,7 +1,8 @@
 class User < ApplicationRecord
   has_secure_password
 
-  has_one :alliance, foreign_key: :admin_id, dependent: :nullify
+  has_one :owned_alliance, class_name: "Alliance", foreign_key: :admin_id, dependent: :nullify
+  belongs_to :alliance, optional: true
 
   enum :role, { global_admin: 0, alliance_admin: 1, alliance_manager: 2, user: 3 }
 
@@ -22,5 +23,18 @@ class User < ApplicationRecord
 
   def alliance_admin?
     role == "alliance_admin"
+  end
+
+  def alliance_manager?
+    role == "alliance_manager"
+  end
+
+  # Returns the alliance this user belongs to (either as admin or manager)
+  def alliance
+    if alliance_admin?
+      owned_alliance
+    else
+      super
+    end
   end
 end

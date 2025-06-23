@@ -25,8 +25,8 @@
         </td>
         <td class="py-3 px-4">
           <div class="flex gap-2">
-            <%= link_to 'Edit', edit_alliance_player_path(@alliance, player), class: "text-blue-400 hover:text-blue-300" %>
-            <%= button_to 'Delete', alliance_player_path(@alliance, player), method: :delete, class: "text-red-400 hover:text-red-300 bg-transparent border-none p-0", form: { style: 'display: inline;', data: { turbo: true } } %>
+            <%= link_to 'Edit', edit_player_path(player), class: "text-blue-400 hover:text-blue-300", data: { turbo_frame: "_top" } %>
+            <%= button_to 'Delete', player_path(player), method: :delete, class: "text-red-400 hover:text-red-300 bg-transparent border-none p-0", form: { style: 'display: inline;', data: { turbo: true } } %>
           </div>
         </td>
       </tr>

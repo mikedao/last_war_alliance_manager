@@ -1,5 +1,5 @@
 <div id="player_status_<%= player.id %>" class="flex items-center">
-  <%= form_with model: [alliance, player], url: toggle_active_alliance_player_path(alliance, player), method: :patch, data: { turbo: true } do |form| %>
+  <%= form_with model: player, url: toggle_active_player_path(player), method: :patch, data: { turbo: true } do |form| %>
     <button type="submit" class="flex items-center focus:outline-none">
       <div class="relative inline-flex items-center cursor-pointer">
         <input type="checkbox" class="sr-only peer" <%= 'checked' if player.active? %> disabled>

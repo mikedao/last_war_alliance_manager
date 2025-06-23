@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_22_145627) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_22_214823) do
   create_table "alliance_duels", force: :cascade do |t|
     t.date "start_date"
     t.integer "alliance_id", null: false
@@ -72,6 +72,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_22_145627) do
     t.integer "role", default: 3, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "alliance_id"
+    t.index ["alliance_id"], name: "index_users_on_alliance_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
@@ -82,4 +84,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_22_145627) do
   add_foreign_key "duel_day_scores", "players"
   add_foreign_key "duel_days", "alliance_duels"
   add_foreign_key "players", "alliances"
+  add_foreign_key "users", "alliances"
 end
