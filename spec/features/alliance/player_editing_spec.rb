@@ -95,6 +95,25 @@ RSpec.feature 'Player Editing', type: :feature do
 
       expect(page).to have_current_path(players_path)
     end
+
+    it 'updates the page properly with Turbo when editing from the edit page' do
+      visit edit_player_path(player)
+
+      fill_in 'Username', with: 'TurboUpdatedPlayer'
+      select 'R5', from: 'Rank'
+      fill_in 'Level', with: '95'
+      fill_in 'Notes', with: 'Turbo updated notes'
+
+      click_on 'Update Player'
+
+      # Should stay on the players index page and show the updated data
+      expect(page).to have_current_path(players_path)
+      expect(page).to have_content('Player updated successfully!')
+      expect(page).to have_content('TurboUpdatedPlayer')
+      expect(page).to have_content('R5')
+      expect(page).to have_content('95')
+      expect(page).to have_content('Turbo updated notes')
+    end
   end
 
   describe 'alliance manager access' do

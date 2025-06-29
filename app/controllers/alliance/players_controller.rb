@@ -95,7 +95,17 @@ class Alliance::PlayersController < ApplicationController
 
   def update
     if @player.update(player_params)
-      redirect_to players_path, notice: "Player updated successfully!"
+      respond_to do |format|
+        format.turbo_stream do
+          # Reload the players list to show updated data
+          @players = @alliance.players.order(Arel.sql("LOWER(username)"))
+          render turbo_stream: [
+            turbo_stream.update("players_list", partial: "alliance/players/list"),
+            turbo_stream.update("flash", partial: "shared/flash", locals: { message: "Player updated successfully!", type: "notice" })
+          ]
+        end
+        format.html { redirect_to players_path, notice: "Player updated successfully!" }
+      end
     else
       render :edit, status: :unprocessable_entity
     end

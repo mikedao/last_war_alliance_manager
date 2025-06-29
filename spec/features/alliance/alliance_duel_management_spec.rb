@@ -93,11 +93,11 @@ RSpec.feature 'Alliance Duel Management', type: :feature do
 
       expected_days = [
         { day_number: 1, name: 'Radar Training' },
-        { day_number: 2, name: 'Hero Development' },
-        { day_number: 3, name: 'Building and Research' },
-        { day_number: 4, name: 'Troop Training' },
-        { day_number: 5, name: 'Kill Enemies' },
-        { day_number: 6, name: 'Free Development' }
+        { day_number: 2, name: 'Base Expansion' },
+        { day_number: 3, name: 'Age of Science' },
+        { day_number: 4, name: 'Train Heroes' },
+        { day_number: 5, name: 'Total Mobilization' },
+        { day_number: 6, name: 'Enemy Buster' }
       ]
 
       expected_days.each do |expected_day|
